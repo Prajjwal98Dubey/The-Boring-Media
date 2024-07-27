@@ -1,0 +1,127 @@
+const User = require('../models/userModel')
+const Post = require('../models/postsModal')
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+const fs = require('fs');
+const path = require('path')
+
+const generateAccessAndRefreshToken = async (userId) => {
+    const user = await User.findById({ _id: userId })
+    let accessToken = await user.generateRefreshToken();
+    let refreshToken = await user.generateAccessToken();
+    return { accessToken, refreshToken };
+}
+const registerUser = async (req, res) => {
+    const { name, email, password, photo } = req.body
+    try {
+        if (!name || !email || !password) {
+            return res.status(400).json({ msg: "Enter all Mandatory Fields." });
+        }
+        const isUserNamePresent = await User.findOne({ name: name })
+        const isUserEmailPresent = await User.findOne({ email: email })
+        if (isUserEmailPresent || isUserNamePresent) return res.status(200).json({ "msg": "user already present." });
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+        const user = await User.create({
+            name,
+            email,
+            password: hashedPassword,
+            photo
+        })
+        const token = jwt.sign({ id: user._id, username: user.name, email: user.email }, process.env.JWT_SECRET_KEY)
+        return res.status(200).json({ token });
+    }
+    catch (err) {
+        console.log(err);
+    }
+}
+const loginUser = async (req, res) => {
+    const { username, password } = req.body
+    try {
+        if (!username || !password) return res.status(400).json({ msg: "enter all mandatory fields." })
+        let enteredUser;
+        enteredUser = await User.findOne(
+            {
+                $or: [{ name: username }, { email: username }]
+            }
+        )
+        const options = {
+            httpOnly: true,
+            sameSite: 'None'
+        }
+        if (enteredUser != null) {
+            if (await bcrypt.compare(password, enteredUser.password)) {
+                const userLogFilePath = path.join(__dirname, "..", "logs", "userlogs.txt")
+                fs.appendFile(userLogFilePath, `${new Date()}, username => ${enteredUser.name}, userid => ${enteredUser._id} \n`, function () { });
+                let { accessToken, refreshToken } = await generateAccessAndRefreshToken(enteredUser._id)
+                enteredUser.refreshToken = refreshToken;
+                await User.findByIdAndUpdate({ _id: enteredUser._id }, {
+                    $set: { refreshToken: refreshToken }
+                })
+                const loggedInUser = await User.findById({ _id: enteredUser._id }).select("-password ")
+                res.cookie("accesstoken", accessToken, options)
+                res.cookie("refreshtoken", refreshToken, options)
+                return res
+                    .status(200)
+                    .json(loggedInUser)
+            }
+            else return res.status(200).json({ "msg": "Invalid Credential." })
+        }
+        else {
+            return res.status(404).json({ msg: "No User Exists." });
+
+        }
+    } catch (error) {
+        console.log(error)
+    }
+
+}
+const createPost = async (req, res) => {
+    const { post } = req.body
+    const user = req.user
+    try {
+        const newPost = await Post.create({
+            post,
+            user: user._id
+        })
+        res.status(200).json(newPost)
+    }
+    catch (error) {
+        console.log("some error occured!!!")
+    }
+}
+const deletePost = async (req, res) => {
+    const postId = req.query.postId
+    try {
+        const isPost = await Post.findOneAndDelete({ _id: postId })
+        if (isPost != null) return res.status(201).json({ post: isPost })
+        else return res.status(404).json({ msg: "post does not exist." })
+    }
+    catch (err) {
+        console.log("some error occured during db call on the Post Modal")
+        res.status(404).json({ msg: "postId does not exists." })
+    }
+
+}
+const getAllMyPosts = async (req, res) => {
+    const user = req.user
+    try {
+        const allPosts = await Post.find({ user: user._id })
+        return res.status(201).json(allPosts)
+    } catch (error) {
+        console.log("some error occured during fetcing all the posts of a specific user.")
+        return res.status(400).json({ msg: "some error occured during fetcing all the posts of a specific user." })
+    }
+}
+const myDetails = async (req, res) => {
+    const user = req.user
+    try {
+        const userDetails = await User.findOne({ _id: user._id })
+        return res.status(201).json(userDetails)
+
+    } catch (error) {
+        console.log("some error occured during fetching the user details.")
+        return res.status(400).json({ msg: "some error occured during fetching the user details." })
+    }
+}
+module.exports = { registerUser, loginUser, createPost, deletePost, getAllMyPosts, myDetails }  
