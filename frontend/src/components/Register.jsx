@@ -30,7 +30,7 @@ const Register = () => {
       }
     }).then(({ data }) => {
       if (data.msg) return alert(data.msg);
-      localStorage.setItem("devil-auth", JSON.stringify(data.token))
+      localStorage.setItem("devil-auth", JSON.stringify(data))
       navigate('/')
       return data.token
     })

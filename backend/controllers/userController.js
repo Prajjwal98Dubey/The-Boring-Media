@@ -28,8 +28,8 @@ const registerUser = async (req, res) => {
             password: hashedPassword,
             photo
         })
-        const token = jwt.sign({ id: user._id, username: user.name, email: user.email }, process.env.JWT_SECRET_KEY)
-        return res.status(200).json({ token });
+        const{accessToken,refreshToken} = await generateAccessAndRefreshToken(user._id)
+        return res.status(200).json({ _id:user._id,email:user.email,photo:user.photo,refreshToken:refreshToken,name:user.name });
     }
     catch (err) {
         console.log(err);
@@ -107,7 +107,8 @@ const getAllMyPosts = async (req, res) => {
     const user = req.user
     try {
         const allPosts = await Post.find({ user: user._id })
-        return res.status(201).json(allPosts)
+        const newOrderOfPosts = allPosts.reverse()
+        return res.status(201).json({allPosts:newOrderOfPosts})
     } catch (error) {
         console.log("some error occured during fetcing all the posts of a specific user.")
         return res.status(400).json({ msg: "some error occured during fetcing all the posts of a specific user." })
