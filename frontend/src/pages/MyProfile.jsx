@@ -1,10 +1,11 @@
 import axios from "axios";
-import { useEffect, useState } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router"
 import { DELETE_MY_POST, MY_ALL_POSTS, MY_DETAILS } from "../apis/backendapi";
 import { ADD_POST_ICON, COMMENT_ICON, DELETE_ICON, FOLLOW_ICON, LIKE_ICON, LOGOUT_ICON, POST_LOADER } from "../assets/icons";
 import PostModal from "../components/PostModal";
 import Brand from "../components/Brand";
+import { MyPostContext } from "../contexts/MyPostContext";
 
 const MyProfile = () => {
     const navigate = useNavigate();
@@ -14,6 +15,8 @@ const MyProfile = () => {
     const [postLoader, setPostLoader] = useState(true)
     const[triggerMount,setTriggerMount] = useState(false)
     const[postModal,setPostModal] = useState(false)
+    const detailRef = useRef(true);
+    const {postFromContext,setPostFromContext} = useContext(MyPostContext)
     useEffect(() => {
         if (!localStorage.getItem("devil-auth")) return navigate('/auth/login');
         const getMyDetails = async () => {
@@ -34,13 +37,18 @@ const MyProfile = () => {
                 }
             })
             setPosts(data.allPosts)
+            setPostFromContext(data.allPosts)
             setPostLoader(false)
         }
-        getMyDetails()
-        getAllMyPosts()
-    }, [navigate,triggerMount])
+        if(detailRef.current){
+            getMyDetails()
+            getAllMyPosts()
+            detailRef.current=false
+        }
+    }, [navigate,triggerMount,setPostFromContext])
     const handleLogOut = () => {
         localStorage.removeItem("devil-auth")
+        setPostFromContext([])
         navigate('/auth/login')
         return
     }
@@ -52,8 +60,10 @@ const MyProfile = () => {
                 "Authorization": `Bearer ${JSON.parse(localStorage.getItem("devil-auth")).refreshToken}`
             }
         })
+        const filterPostsData = postFromContext.filter((post)=>post._id!==id)
+        setPostFromContext(filterPostsData)
         setPostLoader(false)
-        setTriggerMount(!triggerMount)
+        // setTriggerMount(!triggerMount) 
 
     }
 
@@ -69,7 +79,7 @@ const MyProfile = () => {
                     <div className="flex justify-center">
                         <div className=""><img src={ADD_POST_ICON} alt="loading" loading="lazy" className="w-[25px] h-[25px] m-1 flex justify-center cursor-pointer" onClick={()=>setPostModal(true)} />
                         {postModal && 
-                        <PostModal setPostModal={setPostModal} setTriggerMount={setTriggerMount} triggerMount={triggerMount}/>
+                        <PostModal setPostModal={setPostModal} />
                         }
                         </div>
                         <div><img src={FOLLOW_ICON} alt="loading" loading="lazy" className="w-[25px] h-[25px] m-1 flex justify-center" /></div>
@@ -82,7 +92,7 @@ const MyProfile = () => {
                     {postLoader ? <div className="flex justify-center items-cente p-2"><img src={POST_LOADER} alt="loading" className="w-[35px] h-[35px]" /></div> :
                         <div className="flex justify-center">
                             <div className="">
-                            {posts.length===0 ?<div className="flex justify-center p-4 items-center font-bold font-playwright text-white  ">Write some post...</div> :posts.map((post)=>(
+                            {postFromContext.length===0 ?<div className="flex justify-center p-4 items-center font-bold font-playwright text-white  ">Write some post...</div> :postFromContext.map((post)=>(
                                 <div key={post._id} className="m-2 w-[650px] font-rubik border border-gray-400 rounded-md p-2 hover:cursor-pointer hover:border-gray-500">    
                                     <div className="text-white font-semibold text-[15px] w-full h-fit flex justify-start p-1">{post.post}</div>
                                     <div className="flex justify-center">
