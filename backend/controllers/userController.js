@@ -28,8 +28,8 @@ const registerUser = async (req, res) => {
             password: hashedPassword,
             photo
         })
-        const{accessToken,refreshToken} = await generateAccessAndRefreshToken(user._id)
-        return res.status(200).json({ _id:user._id,email:user.email,photo:user.photo,refreshToken:refreshToken,name:user.name });
+        const { accessToken, refreshToken } = await generateAccessAndRefreshToken(user._id)
+        return res.status(200).json({ _id: user._id, email: user.email, photo: user.photo, refreshToken: refreshToken, name: user.name });
     }
     catch (err) {
         console.log(err);
@@ -108,7 +108,7 @@ const getAllMyPosts = async (req, res) => {
     try {
         const allPosts = await Post.find({ user: user._id })
         const newOrderOfPosts = allPosts.reverse()
-        return res.status(201).json({allPosts:newOrderOfPosts})
+        return res.status(201).json({ allPosts: newOrderOfPosts })
     } catch (error) {
         console.log("some error occured during fetcing all the posts of a specific user.")
         return res.status(400).json({ msg: "some error occured during fetcing all the posts of a specific user." })
@@ -125,4 +125,23 @@ const myDetails = async (req, res) => {
         return res.status(400).json({ msg: "some error occured during fetching the user details." })
     }
 }
-module.exports = { registerUser, loginUser, createPost, deletePost, getAllMyPosts, myDetails }  
+const getUserDetail = async (req, res) => {
+    const userName = req.query.user
+    try {
+        const isUser = await User.findOne({ name: userName }).select("-password -refreshToken")
+        if (isUser) {
+            const userPosts = await Post.find({user:isUser._id})   // check for error on this piece of code.
+            const allUserPosts = userPosts.reverse()
+            res.status(201).json({user:isUser,allPosts:allUserPosts})
+        }
+        else {
+            res.status(401).json({ msg: "user does not exists." })
+        }
+    }
+    catch (error) {
+        console.log("Some error occured while fetching the user.")
+    }
+}
+
+
+module.exports = { registerUser, loginUser, createPost, deletePost, getAllMyPosts, myDetails, getUserDetail }  

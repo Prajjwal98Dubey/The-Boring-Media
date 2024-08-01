@@ -1,5 +1,5 @@
 const express = require('express');
-const { registerUser, loginUser, createPost, deletePost, getAllMyPosts, myDetails } = require('../controllers/userController');
+const { registerUser, loginUser, createPost, deletePost, getAllMyPosts, myDetails, getUserDetail } = require('../controllers/userController');
 const { authMiddleWare } = require('../middlewares/authMiddleware');
 const userRouter = express.Router();
 
@@ -11,6 +11,7 @@ userRouter.route('/post').post(authMiddleWare,createPost)
 userRouter.route('/delete-post').delete(authMiddleWare,deletePost)
 userRouter.route('/all-post').get(authMiddleWare,getAllMyPosts)
 userRouter.route('/my-details').get(authMiddleWare,myDetails)
+userRouter.route('/user-detail').get(getUserDetail)
 
 
 

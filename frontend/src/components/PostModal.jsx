@@ -7,7 +7,7 @@ import axios from "axios"
 import { CREATE_NEW_POST } from "../apis/backendapi"
 import { MyPostContext } from "../contexts/MyPostContext"
 
-const PostModal = ({ setPostModal }) => {
+const PostModal = ({ setPostModal,setDisplayPost }) => {
     const [message, setMessage] = useState("")
     const { setPostFromContext, postFromContext } = useContext(MyPostContext)
     const handleCreatePost = async () => {
@@ -21,6 +21,7 @@ const PostModal = ({ setPostModal }) => {
             }
         })
         setPostFromContext([data, ...postFromContext])
+        setDisplayPost([data, ...postFromContext])
         setMessage("")
         setPostModal(false)
         // setTriggerMount(!triggerMount)
