@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./helpers/connectDB');
 const userRouter = require('./routes/userRoutes');
 const cookieParser = require('cookie-parser');
+const followRouter = require('./routes/followRoutes');
 
 app.use(express.json())
 app.use(cors({
@@ -15,6 +16,7 @@ app.use(cookieParser())
 dotenv.config()
 
 app.use('/api/v1/u',userRouter);
+app.use('/api/v1/f',followRouter)
 
 const start = async()=>{
     await connectDB()
