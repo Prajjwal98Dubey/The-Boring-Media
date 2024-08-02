@@ -3,7 +3,8 @@ const Post = require('../models/postsModal')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const fs = require('fs');
-const path = require('path')
+const path = require('path');
+const mongoose = require('mongoose')
 
 const generateAccessAndRefreshToken = async (userId) => {
     const user = await User.findById({ _id: userId })
@@ -127,19 +128,22 @@ const myDetails = async (req, res) => {
 }
 const getUserDetail = async (req, res) => {
     const userName = req.query.user
+    const { ObjectId } = mongoose.Types
     try {
-        const isUser = await User.findOne({ name: userName }).select("-password -refreshToken")
+        const isUser = ObjectId.isValid(userName) ? await User.findOne({ _id: userName }).select("-password -refreshToken") : await User.findOne({ name: userName }).select("-password -refreshToken")
+
         if (isUser) {
-            const userPosts = await Post.find({user:isUser._id})   // check for error on this piece of code.
+            const userPosts = await Post.find({ user: isUser._id })   // check for error on this piece of code.
             const allUserPosts = userPosts.reverse()
-            res.status(201).json({user:isUser,allPosts:allUserPosts})
+            res.status(201).json({ user: isUser, allPosts: allUserPosts })
         }
         else {
             res.status(401).json({ msg: "user does not exists." })
         }
     }
     catch (error) {
-        console.log("Some error occured while fetching the user.")
+        console.log("User Detail Error", error)
+        console.log("User Controller,some error occured while fetching the user.")
     }
 }
 
