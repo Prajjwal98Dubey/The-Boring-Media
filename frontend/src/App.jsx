@@ -3,6 +3,9 @@ import Home from "./pages/Home"
 import Register from './components/Register'
 import Login from './components/Login'
 import MyProfile from './pages/MyProfile'
+import Store from './pages/Store'
+import BookMark from './pages/BookMark'
+import Download from './pages/Download'
 function App() {
  
   return (
@@ -31,5 +34,17 @@ const appRouter = createBrowserRouter([
   {
     path:'/u/:id',
     element:<MyProfile/>
+  },
+  {
+    path:'/store',
+    element:<Store/>
+  },
+  {
+    path:'/bookmark',
+    element:<BookMark/>
+  },
+  {
+    path:'/download',
+    element:<Download/>
   }
 ])
