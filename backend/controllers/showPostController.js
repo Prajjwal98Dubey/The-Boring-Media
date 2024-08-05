@@ -38,5 +38,14 @@ const displayPostsForLoggedInUser = async (req, res) => {
     }
 }
 
+const showSinglePost = async (req, res) => {
+    const postId = req.query.id
+    try {
+        const post = await Post.findOne({ _id: postId })
+        res.status(201).json(post)
+    } catch (error) {
+        console.log(error)
+    }
+}
 
-module.exports = { displayPostsForLoggedInUser }
+module.exports = { displayPostsForLoggedInUser, showSinglePost }
