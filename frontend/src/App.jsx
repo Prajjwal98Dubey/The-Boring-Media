@@ -6,6 +6,7 @@ import MyProfile from './pages/MyProfile'
 import Store from './pages/Store'
 import BookMark from './pages/BookMark'
 import Download from './pages/Download'
+import SinglePostPage from './pages/SinglePostPage'
 function App() {
  
   return (
@@ -46,5 +47,9 @@ const appRouter = createBrowserRouter([
   {
     path:'/download',
     element:<Download/>
+  },
+  {
+    path:'/post/:id',
+    element:<SinglePostPage/>
   }
 ])

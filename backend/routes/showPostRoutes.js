@@ -5,5 +5,5 @@ const showPostRouter = require('express').Router()
 
 showPostRouter.route('/l').get(authMiddleWare,displayPostsForLoggedInUser) // loggedin user
 showPostRouter.route('/nl') // not loggedin user
-showPostRouter.route('single-post').get(showSinglePost)
+showPostRouter.route('/single-post').get(showSinglePost)
 module.exports = {showPostRouter}
