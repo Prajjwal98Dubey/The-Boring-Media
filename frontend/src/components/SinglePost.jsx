@@ -1,5 +1,7 @@
 /* eslint-disable react/prop-types */
 
+/// this component is displaying the posts on the home page.
+
 import axios from "axios"
 import { useEffect, useState } from "react"
 import { USER_DETAIL } from "../apis/backendapi"

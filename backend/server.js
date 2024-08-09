@@ -7,6 +7,7 @@ const userRouter = require('./routes/userRoutes');
 const cookieParser = require('cookie-parser');
 const followRouter = require('./routes/followRoutes');
 const { showPostRouter } = require('./routes/showPostRoutes');
+const commentRouter = require('./routes/commentRoutes');
 
 app.use(express.json())
 app.use(cors({
@@ -16,13 +17,13 @@ app.use(cors({
 app.use(cookieParser())
 dotenv.config()
 
-app.use('/api/v1/u',userRouter);
-app.use('/api/v1/f',followRouter)
-app.use('/api/v1/show-post',showPostRouter)
-
-const start = async()=>{
+app.use('/api/v1/u', userRouter);
+app.use('/api/v1/f', followRouter)
+app.use('/api/v1/show-post', showPostRouter)
+app.use('/api/v1/comment', commentRouter)
+const start = async () => {
     await connectDB()
-    app.listen(process.env.PORT,()=>console.log(`App Started at ${process.env.PORT}`))
+    app.listen(process.env.PORT, () => console.log(`App Started at ${process.env.PORT}`))
 
 }
 start()
