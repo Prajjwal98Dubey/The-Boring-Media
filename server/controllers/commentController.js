@@ -1,4 +1,4 @@
-const Comment = require("../models/commentModal");
+const Comment = require('../models/commentModal')
 
 const getAllComments = async (req, res) => {
   const postId = req.query.postId;
