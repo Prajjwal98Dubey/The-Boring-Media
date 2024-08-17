@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { USER_DETAIL } from "../apis/backendapi";
 import { BOOKMARK_ICON, COMMENT_ICON, LIKE_ICON } from "../assets/icons";
 
+
 const SinglePost = ({ post }) => {
   const [isLoading, setIsLoading] = useState(true);
   const [userDetail, setUserDetail] = useState({});
@@ -46,7 +47,8 @@ const SinglePost = ({ post }) => {
               {post.post}
             </div>
             <div className="flex w-1/2 justify-start mt-1 mb-1">
-              <div className="flex justify-center items-center hover:bg-[#e15d5d] p-[5px] rounded-full mr-[20px]">
+              <div className="flex justify-center items-center hover:bg-[#e15d5d] p-[5px] rounded-full mr-[20px]"
+              >
                 <img
                   src={LIKE_ICON}
                   alt="loading"
