@@ -31,7 +31,7 @@ const PostModal = ({ setPostModal,setDisplayPost }) => {
             <div onClick={() => setPostModal(false)}>
                 <BackDrop />
             </div>
-            <div className="w-[500px] h-[200px] bg-[#313131] rounded-lg z-10 fixed top-[25%] left-[30%] text-white font-rubik border border-gray-400 shadow-sm shadow-gray-400 ">
+            <div className="w-[500px] h-[200px] bg-[#313131] rounded-lg z-10 fixed top-[30%] left-[32%] text-white font-rubik border border-gray-400 shadow-sm shadow-gray-400 ">
                 <div className="flex justify-center items-center font-rubik text-white text-2xl m-1">Write a new post</div>
                 <div className="flex justify-center m-2"><textarea autoFocus className="w-[400px] h-[65px] rounded-lg bg-[#313131] border border-gray-300 p-1" placeholder="write something..." onChange={(e) => setMessage(e.target.value)}></textarea></div>
                 <div className="flex justify-center">

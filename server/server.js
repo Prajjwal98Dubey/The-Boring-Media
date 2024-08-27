@@ -8,6 +8,7 @@ const followRouter = require("./routes/followRoutes");
 const { showPostRouter } = require("./routes/showPostRoutes");
 const commentRouter = require("./routes/commentRoutes");
 const likeRouter = require("./routes/likeRoutes");
+const bookmarkRouter = require("./routes/bookmarkRoutes");
 
 app.use(express.json());
 app.use(
@@ -23,6 +24,7 @@ app.use("/api/v1/f", followRouter);
 app.use("/api/v1/show-post", showPostRouter);
 app.use("/api/v1/comment", commentRouter);
 app.use("/api/v1/like",likeRouter)
+app.use("/api/v1/bookmark",bookmarkRouter)
 const start = async () => {
   await connectDB();
   app.listen(process.env.PORT, () =>

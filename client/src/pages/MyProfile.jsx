@@ -24,6 +24,7 @@ import {
 import PostModal from "../components/PostModal";
 import Brand from "../components/Brand";
 import { MyPostContext } from "../contexts/MyPostContext";
+import { Link } from "react-router-dom";
 
 const MyProfile = () => {
   const navigate = useNavigate();
@@ -256,8 +257,8 @@ const MyProfile = () => {
                   </div>
                 </div>
               )}
-          </div>
-          <div className="h-[47%]  overflow-y-auto">
+          </div>  
+          <div className="h-[47%]  overflow-y-auto">    
             {postLoader ? (
               <div className="flex justify-center items-cente p-2">
                 <img
@@ -275,8 +276,8 @@ const MyProfile = () => {
                     </div>
                   ) : (
                     displayPost.map((post) => (
+                      <Link to={`/post/${post._id}`} key={post._id}>
                       <div
-                        key={post._id}
                         className="m-2 w-[650px] font-rubik border border-gray-400 rounded-md p-2 hover:cursor-pointer hover:border-gray-500"
                       >
                         <div className="text-white font-semibold text-[15px] w-full h-fit flex justify-start p-1">
@@ -308,6 +309,7 @@ const MyProfile = () => {
                           ) : null}
                         </div>
                       </div>
+                      </Link>
                     ))
                   )}
                 </div>

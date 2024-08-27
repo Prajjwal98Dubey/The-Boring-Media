@@ -1,3 +1,6 @@
 node_modules
 .env
 logs
+logs/userlogs.txt
+
+logs/userlogs.txt

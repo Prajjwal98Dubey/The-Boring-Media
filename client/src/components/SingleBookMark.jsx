@@ -1,0 +1,13 @@
+/* eslint-disable react/prop-types */
+/* eslint-disable no-unused-vars */
+
+const SingleBookMark = ({postContent,username}) => {
+  return (
+    <div className="w-[550px] h-fit text-white font-rubik p-1 m-1 border border-gray-300 rounded-md">
+        <div className=" text-xl flex justify-center text-white font-bold">{username}</div>
+        <div className="text-white">{postContent}</div>
+    </div>
+  )
+}
+
+export default SingleBookMark

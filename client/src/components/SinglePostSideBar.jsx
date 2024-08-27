@@ -6,6 +6,7 @@ import SinglePostComment from "./SinglePostComment";
 import axios from "axios";
 import { CREATE_COMMENT } from "../apis/backendapi";
 import { handleLikes } from "../helpers/postHelpers";
+import { handleBookMark } from "../helpers/bookmarkHelpers";
 const SinglePostSideBar = ({ post }) => {
   const [inputText, setInputText] = useState("");
   const [triggerMountComments, setTriggerMountComments] = useState(false);
@@ -76,7 +77,10 @@ const SinglePostSideBar = ({ post }) => {
           </div>
           <div className="p-1 m-1  rounded-full flex justify-center items-center cursor-pointer">
             <div className="">
-              <div className="hover:bg-[#4a4949] p-1 rounded-full">
+              <div
+                className="hover:bg-[#4a4949] p-1 rounded-full"
+                onClick={()=>handleBookMark(post)}
+              >
                 <img
                   src={BOOKMARK_ICON}
                   alt="loading"
