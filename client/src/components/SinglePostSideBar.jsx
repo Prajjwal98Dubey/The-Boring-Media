@@ -45,38 +45,47 @@ const SinglePostSideBar = ({ post }) => {
         <div className="w-fit p-2 m-1 rounded-lg border border-gray-400 flex justify-around">
           <div className="p-1 m-1 rounded-full flex justify-center items-center cursor-pointer">
             <div className="">
-                <div className="hover:bg-red-500 p-1 rounded-full" onClick={()=>handleLikes(post._id)}>
-            <img
-              src={LIKE_ICON}
-              alt="loading"
-              className="w-[18px] h-[18px] rounded-full m-1  "
-            />
-                </div>
-            <div className="flex justify-center items-center text-[14px m-1]">{post.likeCount}</div>
+              <div
+                className="hover:bg-red-500 p-1 rounded-full"
+                onClick={() => handleLikes(post._id)}
+              >
+                <img
+                  src={LIKE_ICON}
+                  alt="loading"
+                  className="w-[18px] h-[18px] rounded-full m-1  "
+                />
+              </div>
+              <div className="flex justify-center items-center text-[14px m-1]">
+                {post.likeCount}
+              </div>
             </div>
           </div>
           <div className="p-1 m-1  rounded-full flex justify-center items-center cursor-pointer">
-          <div className="">
-                <div className="hover:bg-blue-500 p-1 rounded-full">
-            <img
-              src={COMMENT_ICON}
-              alt="loading"
-              className="w-[18px] h-[18px] rounded-full m-1  "
-            />
-                </div>
-            <div className="flex justify-center items-center text-[14px m-1]">{post.likeCount}</div>
+            <div className="">
+              <div className="hover:bg-blue-500 p-1 rounded-full">
+                <img
+                  src={COMMENT_ICON}
+                  alt="loading"
+                  className="w-[18px] h-[18px] rounded-full m-1  "
+                />
+              </div>
+              <div className="flex justify-center items-center text-[14px m-1]">
+                0
+              </div>
             </div>
           </div>
           <div className="p-1 m-1  rounded-full flex justify-center items-center cursor-pointer">
-          <div className="">
-                <div className="hover:bg-[#4a4949] p-1 rounded-full">
-            <img
-              src={BOOKMARK_ICON}
-              alt="loading"
-              className="w-[18px] h-[18px] rounded-full m-1  "
-            />
-                </div>
-            <div className="flex justify-center items-center text-[14px m-1]">{post.likeCount}</div>
+            <div className="">
+              <div className="hover:bg-[#4a4949] p-1 rounded-full">
+                <img
+                  src={BOOKMARK_ICON}
+                  alt="loading"
+                  className="w-[18px] h-[18px] rounded-full m-1  "
+                />
+              </div>
+              <div className="flex justify-center items-center text-[14px m-1]">
+                0
+              </div>
             </div>
           </div>
         </div>
