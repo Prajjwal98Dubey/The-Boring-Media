@@ -1,15 +1,17 @@
 /* eslint-disable react/prop-types */
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BOOKMARK_ICON, COMMENT_ICON, LIKE_ICON } from "../assets/icons";
 import SinglePostComment from "./SinglePostComment";
 import axios from "axios";
-import { CREATE_COMMENT } from "../apis/backendapi";
+import { COUNT_POST_BOOKMARK, CREATE_COMMENT } from "../apis/backendapi";
 import { handleLikes } from "../helpers/postHelpers";
 import { handleBookMark } from "../helpers/bookmarkHelpers";
 const SinglePostSideBar = ({ post }) => {
   const [inputText, setInputText] = useState("");
   const [triggerMountComments, setTriggerMountComments] = useState(false);
+  const [bookMarkCount, setBookMarkCount] = useState(0);
+  const [triggerMountBookMark, setTriggerMountBookMark] = useState(false);
   const handleCreatePost = async () => {
     if (inputText.length === 0) return alert("write something to post.");
     await axios.post(
@@ -30,6 +32,21 @@ const SinglePostSideBar = ({ post }) => {
     setInputText("");
     setTriggerMountComments(!triggerMountComments);
   };
+  useEffect(() => {
+    const countBookMarks = async () => {
+      const { data } = await axios.get(
+        COUNT_POST_BOOKMARK + `?postId=${post._id}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+      // console.log(data)
+      setBookMarkCount(data.count);
+    };
+    countBookMarks();
+  },[post._id,triggerMountBookMark]);
   return (
     <div className="w-full text-white font-rubik">
       <div className="m-3 p-2 flex">
@@ -79,7 +96,10 @@ const SinglePostSideBar = ({ post }) => {
             <div className="">
               <div
                 className="hover:bg-[#4a4949] p-1 rounded-full"
-                onClick={()=>handleBookMark(post)}
+                onClick={async() => {
+                  await handleBookMark(post);
+                  setTriggerMountBookMark(!triggerMountBookMark);
+                }}
               >
                 <img
                   src={BOOKMARK_ICON}
@@ -88,7 +108,7 @@ const SinglePostSideBar = ({ post }) => {
                 />
               </div>
               <div className="flex justify-center items-center text-[14px m-1]">
-                0
+                {bookMarkCount}
               </div>
             </div>
           </div>

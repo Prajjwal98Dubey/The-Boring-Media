@@ -3,6 +3,7 @@ const User = require("../models/userModel");
 const Post = require("../models/postsModal");
 
 const allBookMarks = async (req, res) => {
+  // for a user.
   const user = req.user;
   try {
     const allBookMarks = await BookMark.find({ user: user });
@@ -10,7 +11,7 @@ const allBookMarks = async (req, res) => {
     let allDetails = [];
     for (let i = 0; i < allBookMarks.length; i++) {
       const postDetails = await Post.findOne({ _id: allBookMarks[i].post });
-    //   console.log(postDetails)
+      //   console.log(postDetails)
       const userDetails = await User.findOne({ _id: postDetails.user });
       allDetails.push({
         postId: postDetails._id,
@@ -50,5 +51,14 @@ const handleBookMark = async (req, res) => {
     console.log("some error occured during addBookmark", error);
   }
 };
+const countPostBookMarks = async (req, res) => {
+  const postId = req.query.postId;
+  try {
+    const countBookMarks = await BookMark.find({ post: postId });
+    return res.status(200).json({ count: countBookMarks.length });
+  } catch (error) {
+    console.log("some error occured during count post bookmarks", error);
+  }
+};
 
-module.exports = { allBookMarks, handleBookMark };
+module.exports = { allBookMarks, handleBookMark, countPostBookMarks };
