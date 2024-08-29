@@ -9,6 +9,9 @@ const { showPostRouter } = require("./routes/showPostRoutes");
 const commentRouter = require("./routes/commentRoutes");
 const likeRouter = require("./routes/likeRoutes");
 const bookmarkRouter = require("./routes/bookmarkRoutes");
+const upload = require("./helpers/multer");
+const fs = require("fs");
+const uploadOnCloudinary = require("./helpers/cloudinary");
 
 app.use(express.json());
 app.use(
@@ -19,12 +22,27 @@ app.use(
 );
 dotenv.config();
 
+app.post(
+  "/api/v1/upload/user_pic",
+  upload.single("user-image"),
+  async (req, res) => {
+    const filePath = req.file.path;
+    try {
+      const { url } = await uploadOnCloudinary(filePath);
+      fs.unlink(filePath, () => {});
+      return res.status(201).json(url);
+    } catch (err) {
+      console.log("some error during uploading on cloud", err);
+    }
+  }
+);
+
 app.use("/api/v1/u", userRouter);
 app.use("/api/v1/f", followRouter);
 app.use("/api/v1/show-post", showPostRouter);
 app.use("/api/v1/comment", commentRouter);
-app.use("/api/v1/like",likeRouter)
-app.use("/api/v1/bookmark",bookmarkRouter)
+app.use("/api/v1/like", likeRouter);
+app.use("/api/v1/bookmark", bookmarkRouter);
 const start = async () => {
   await connectDB();
   app.listen(process.env.PORT, () =>

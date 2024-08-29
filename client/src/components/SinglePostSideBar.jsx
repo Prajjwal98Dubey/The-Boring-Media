@@ -12,6 +12,7 @@ const SinglePostSideBar = ({ post }) => {
   const [triggerMountComments, setTriggerMountComments] = useState(false);
   const [bookMarkCount, setBookMarkCount] = useState(0);
   const [triggerMountBookMark, setTriggerMountBookMark] = useState(false);
+  const [triggerMountLike, setTriggerMountLike] = useState(false);
   const handleCreatePost = async () => {
     if (inputText.length === 0) return alert("write something to post.");
     await axios.post(
@@ -33,6 +34,9 @@ const SinglePostSideBar = ({ post }) => {
     setTriggerMountComments(!triggerMountComments);
   };
   useEffect(() => {
+    if (triggerMountLike) setTriggerMountLike(!triggerMountLike);
+  }, [triggerMountLike]);
+  useEffect(() => {
     const countBookMarks = async () => {
       const { data } = await axios.get(
         COUNT_POST_BOOKMARK + `?postId=${post._id}`,
@@ -46,7 +50,7 @@ const SinglePostSideBar = ({ post }) => {
       setBookMarkCount(data.count);
     };
     countBookMarks();
-  },[post._id,triggerMountBookMark]);
+  }, [post._id, triggerMountBookMark]);
   return (
     <div className="w-full text-white font-rubik">
       <div className="m-3 p-2 flex">
@@ -65,7 +69,10 @@ const SinglePostSideBar = ({ post }) => {
             <div className="">
               <div
                 className="hover:bg-red-500 p-1 rounded-full"
-                onClick={() => handleLikes(post._id)}
+                onClick={async () => {
+                  await handleLikes(post._id);
+                  setTriggerMountLike(!triggerMountLike);
+                }}
               >
                 <img
                   src={LIKE_ICON}
@@ -96,7 +103,7 @@ const SinglePostSideBar = ({ post }) => {
             <div className="">
               <div
                 className="hover:bg-[#4a4949] p-1 rounded-full"
-                onClick={async() => {
+                onClick={async () => {
                   await handleBookMark(post);
                   setTriggerMountBookMark(!triggerMountBookMark);
                 }}
