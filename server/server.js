@@ -12,6 +12,8 @@ const bookmarkRouter = require("./routes/bookmarkRoutes");
 const upload = require("./helpers/multer");
 const fs = require("fs");
 const uploadOnCloudinary = require("./helpers/cloudinary");
+const { authMiddleWare } = require("./middlewares/authMiddleware");
+const User = require("./models/userModel");
 
 app.use(express.json());
 app.use(
@@ -33,6 +35,22 @@ app.post(
       return res.status(201).json(url);
     } catch (err) {
       console.log("some error during uploading on cloud", err);
+    }
+  }
+);
+app.post(
+  "/api/v1/edit-photo",
+  authMiddleWare,
+  upload.single("user-image"),
+  async (req, res) => {
+    const user = req.user;
+    try {
+      const { url } = await uploadOnCloudinary(req.file.path);
+      fs.unlink(req.file.path,()=>{})
+      await User.findByIdAndUpdate({ _id: user._id }, { photo: url });
+      return res.status(201).json({msg:'photo edit success.'})
+    } catch (error) {
+      console.log("some error occured while editing the photo", error);
     }
   }
 );

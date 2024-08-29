@@ -6,6 +6,7 @@ import {
   COUNT_FOLLOW_FOLLOWING,
   CREATE_FOLLOW_FOLLOWING,
   DELETE_MY_POST,
+  EDIT_USER_PIC,
   MY_ALL_POSTS,
   MY_DETAILS,
   USER_DETAIL,
@@ -38,6 +39,7 @@ const MyProfile = () => {
   const [follower, setFollower] = useState(0);
   const [isFollowing, setIsFollowing] = useState(false);
   const [following, setFollowing] = useState(0);
+  const [fileData, setFileData] = useState({});
   const detailRef = useRef(true);
   const { postFromContext, setPostFromContext } = useContext(MyPostContext);
   useEffect(() => {
@@ -159,6 +161,23 @@ const MyProfile = () => {
       setTriggerMount(!triggerMount);
     }
   };
+  const handleFile = (e) => {
+    setFileData(e.target.files[0]);
+  };
+  const handleFormSubmit = async (e) => {
+    e.preventDefault();
+    const data = new FormData();
+    data.append("user-image", fileData);
+    await fetch(EDIT_USER_PIC, {
+      method: "POST",
+      body: data,
+      headers: {
+        Authorization: `Bearer ${
+          JSON.parse(localStorage.getItem("devil-auth")).refreshToken
+        }`,
+      },
+    });
+  };
 
   return (
     <div className="h-[100vh] w-[100vw]">
@@ -219,6 +238,24 @@ const MyProfile = () => {
                   {following}
                 </div>
               </div>
+              <div className="m-2 flex items-center justify-center">
+                <form onSubmit={(e) => handleFormSubmit(e)}>
+                  <input
+                    type="file"
+                    name="user-image"
+                    className="text-white"
+                    onChange={(e) => handleFile(e)}
+                  />
+                  <div className="flex justify-center">
+                    <button
+                      type="submit"
+                      className="bg-blue-500 text-white hover:bg-blue-600 rounded-md w-[100px] h-[30px]"
+                    >
+                      edit
+                    </button>
+                  </div>
+                </form>
+              </div>
               {localStorage.getItem("devil-auth") &&
               JSON.parse(localStorage.getItem("devil-auth")).name ===
                 userName ? (
@@ -257,8 +294,8 @@ const MyProfile = () => {
                   </div>
                 </div>
               )}
-          </div>  
-          <div className="h-[47%]  overflow-y-auto">    
+          </div>
+          <div className="h-[47%]  overflow-y-auto">
             {postLoader ? (
               <div className="flex justify-center items-cente p-2">
                 <img
@@ -277,38 +314,36 @@ const MyProfile = () => {
                   ) : (
                     displayPost.map((post) => (
                       <Link to={`/post/${post._id}`} key={post._id}>
-                      <div
-                        className="m-2 w-[650px] font-rubik border border-gray-400 rounded-md p-2 hover:cursor-pointer hover:border-gray-500"
-                      >
-                        <div className="text-white font-semibold text-[15px] w-full h-fit flex justify-start p-1">
-                          {post.post}
-                        </div>
-                        <div className="flex justify-center">
-                          <img
-                            src={LIKE_ICON}
-                            alt="loading"
-                            loading="lazy"
-                            className="w-[13px] h-[13px] cursor-pointer m-1"
-                          />
-                          <img
-                            src={COMMENT_ICON}
-                            alt="loading"
-                            loading="lazy"
-                            className="w-[13px] h-[13px] cursor-pointer m-1"
-                          />
-                          {localStorage.getItem("devil-auth") &&
-                          JSON.parse(localStorage.getItem("devil-auth"))
-                            .name === userName ? (
+                        <div className="m-2 w-[650px] font-rubik border border-gray-400 rounded-md p-2 hover:cursor-pointer hover:border-gray-500">
+                          <div className="text-white font-semibold text-[15px] w-full h-fit flex justify-start p-1">
+                            {post.post}
+                          </div>
+                          <div className="flex justify-center">
                             <img
-                              src={DELETE_ICON}
+                              src={LIKE_ICON}
                               alt="loading"
                               loading="lazy"
                               className="w-[13px] h-[13px] cursor-pointer m-1"
-                              onClick={() => handleDeletePost(post._id)}
                             />
-                          ) : null}
+                            <img
+                              src={COMMENT_ICON}
+                              alt="loading"
+                              loading="lazy"
+                              className="w-[13px] h-[13px] cursor-pointer m-1"
+                            />
+                            {localStorage.getItem("devil-auth") &&
+                            JSON.parse(localStorage.getItem("devil-auth"))
+                              .name === userName ? (
+                              <img
+                                src={DELETE_ICON}
+                                alt="loading"
+                                loading="lazy"
+                                className="w-[13px] h-[13px] cursor-pointer m-1"
+                                onClick={() => handleDeletePost(post._id)}
+                              />
+                            ) : null}
+                          </div>
                         </div>
-                      </div>
                       </Link>
                     ))
                   )}
