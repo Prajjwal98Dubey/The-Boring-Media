@@ -97,13 +97,13 @@ const loginUser = async (req, res) => {
   }
 };
 const createPost = async (req, res) => {
-  const { post,postPhoto } = req.body;
+  const { post, postPhoto } = req.body;
   const user = req.user;
   try {
     const newPost = await Post.create({
       post,
       user: user._id,
-      postPhoto
+      postPhoto,
     });
     res.status(200).json(newPost);
   } catch (error) {
@@ -139,7 +139,9 @@ const getAllMyPosts = async (req, res) => {
 const myDetails = async (req, res) => {
   const user = req.user;
   try {
-    const userDetails = await User.findOne({ _id: user._id }).select("-password -refreshToken");
+    const userDetails = await User.findOne({ _id: user._id }).select(
+      "-password -refreshToken"
+    );
     return res.status(201).json(userDetails);
   } catch (error) {
     console.log("some error occured during fetching the user details.");
@@ -170,6 +172,16 @@ const getUserDetail = async (req, res) => {
     console.log("User Controller,some error occured while fetching the user.");
   }
 };
+const editProfileBio = async (req, res) => {
+  const user = req.user;
+  const { bio } = req.body;
+  try {
+    await User.findByIdAndUpdate({ _id: user._id }, { bio: bio });
+    return res.status(201).json({ msg: "edit success." });
+  } catch (error) {
+    console.log("some error occured during edit profile.", error);
+  }
+};
 
 module.exports = {
   registerUser,
@@ -179,4 +191,5 @@ module.exports = {
   getAllMyPosts,
   myDetails,
   getUserDetail,
+  editProfileBio,
 };

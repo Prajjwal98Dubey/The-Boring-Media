@@ -16,6 +16,7 @@ import {
   CHECK_ICON,
   COMMENT_ICON,
   DELETE_ICON,
+  EDIT_PEN_ICON,
   FOLLOW_ICON,
   LIKE_ICON,
   LOGOUT_ICON,
@@ -27,6 +28,7 @@ import Brand from "../components/Brand";
 import { MyPostContext } from "../contexts/MyPostContext";
 import { Link } from "react-router-dom";
 import RecommendPostsContext from "../contexts/RecommendPostsContext";
+import EditModal from "../components/EditModal";
 
 const MyProfile = () => {
   const navigate = useNavigate();
@@ -35,6 +37,7 @@ const MyProfile = () => {
   const [postLoader, setPostLoader] = useState(true);
   const [triggerMount, setTriggerMount] = useState(false);
   const [postModal, setPostModal] = useState(false);
+  const [editModal, setEditModal] = useState(false);
   const [userName] = useState(document.URL.split("/").reverse()[0]);
   const [displayPost, setDisplayPost] = useState([]);
   const [follower, setFollower] = useState(0);
@@ -43,7 +46,7 @@ const MyProfile = () => {
   const [fileData, setFileData] = useState({});
   const detailRef = useRef(true);
   const { postFromContext, setPostFromContext } = useContext(MyPostContext);
-  const {setRecommendPosts} = useContext(RecommendPostsContext);
+  const { setRecommendPosts } = useContext(RecommendPostsContext);
   useEffect(() => {
     const getMyDetails = async () => {
       if (
@@ -121,7 +124,7 @@ const MyProfile = () => {
   const handleLogOut = () => {
     localStorage.removeItem("devil-auth");
     setPostFromContext([]);
-    setRecommendPosts([])
+    setRecommendPosts([]);
     navigate("/auth/login");
     return;
   };
@@ -169,7 +172,8 @@ const MyProfile = () => {
   };
   const handleFormSubmit = async (e) => {
     e.preventDefault();
-    if (Object.keys(fileData).length===0) return alert ('upload some file to continue.')
+    if (Object.keys(fileData).length === 0)
+      return alert("upload some file to continue.");
     const data = new FormData();
     data.append("user-image", fileData);
     await fetch(EDIT_USER_PIC, {
@@ -197,10 +201,33 @@ const MyProfile = () => {
               className="w-[100px] h-[100px] rounded-full border border-blue-800 shadow-sm shadow-blue-500 hover:cursor-pointer hover:border-blue-500 absolute top-[86px]"
             />
           </div>
-          <div className="h-[25%]  mt-[45px] border border-transparent border-b-gray-300">
-            <div className="flex justify-center font-rubik text-2xl text-white m-1">
+          <div className="h-[35%]  mt-[45px] border border-transparent border-b-gray-300">
+            <div className="flex justify-center font-rubik text-2xl text-white font-extrabold m-1">
               @{userData.name}
             </div>
+            {userData.bio !== "" && (
+              <div className="flex justify-center font-playwright text-white m-1">
+                {userData.bio}
+              </div>
+            )}
+            {localStorage.getItem("devil-auth") &&
+            JSON.parse(localStorage.getItem("devil-auth")).name === userName ? (
+              <div className="flex justify-center">
+                <img
+                  src={EDIT_PEN_ICON}
+                  alt="loading..."
+                  className="w-[20px] h-[20px] cursor-pointer"
+                  onClick={() => setEditModal(true)}
+                />
+                {editModal && (
+                  <EditModal
+                    setEditModal={setEditModal}
+                    triggerMount={triggerMount}
+                    setTriggerMount={setTriggerMount}
+                  />
+                )}
+              </div>
+            ) : null}
             <div className="flex justify-center">
               {localStorage.getItem("devil-auth") &&
               JSON.parse(localStorage.getItem("devil-auth")).name ===
@@ -258,22 +285,25 @@ const MyProfile = () => {
                 </div>
               ) : null}
             </div>
-            <div className="m-2 flex items-center justify-center">
-              <form onSubmit={(e) => handleFormSubmit(e)}>
-                <input
-                  type="file"
-                  name="user-image"
-                  className="text-white flex justify-center"
-                  onChange={(e) => handleFile(e)}
-                />
-                <button
-                  type="submit"
-                  className="bg-blue-500 text-white hover:bg-blue-600 rounded-md w-[100px] h-[30px]"
-                >
-                  Edit
-                </button>
-              </form>
-            </div>
+            {localStorage.getItem("devil-auth") &&
+            JSON.parse(localStorage.getItem("devil-auth")).name === userName ? (
+              <div className="m-2 flex items-center justify-center">
+                <form onSubmit={(e) => handleFormSubmit(e)}>
+                  <input
+                    type="file"
+                    name="user-image"
+                    className="text-white flex justify-center"
+                    onChange={(e) => handleFile(e)}
+                  />
+                  <button
+                    type="submit"
+                    className="bg-blue-500 text-white hover:bg-blue-600 rounded-md w-[100px] h-[30px]"
+                  >
+                    Edit
+                  </button>
+                </form>
+              </div>
+            ) : null}
             {localStorage.getItem("devil-auth") &&
               JSON.parse(localStorage.getItem("devil-auth")).name !==
                 userName && (
@@ -322,7 +352,15 @@ const MyProfile = () => {
                           <div className="text-white font-semibold text-[15px] w-full h-fit flex justify-start p-1">
                             {post.post}
                           </div>
-                          {post.postPhoto!=="" && <div><img src={post.postPhoto} alt="loading.." className="w-[250px] h-[200px] rounded-md" /></div>}
+                          {post.postPhoto !== "" && (
+                            <div>
+                              <img
+                                src={post.postPhoto}
+                                alt="loading.."
+                                className="w-[250px] h-[200px] rounded-md"
+                              />
+                            </div>
+                          )}
                           <div className="flex justify-center">
                             <img
                               src={LIKE_ICON}
