@@ -35,7 +35,6 @@ const DisplayPost = () => {
   }, []);
   return (
     <div className="border border-transparent border-r-gray-600 border-l-gray-600 w-[60%] h-full text-white overflow-auto flex justify-center font-rubik ">
-      {console.log(recommendPosts)}
       {isPostLoading ? (
         <div className="flex justify-center p-2 items-center">
           <img

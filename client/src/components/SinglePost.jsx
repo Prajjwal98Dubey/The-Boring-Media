@@ -25,6 +25,7 @@ const SinglePost = ({ post }) => {
           <div className="text-[13px] h-fit pl-[3px] pr-[3px] pb-[3px]">
             {post.post}
           </div>
+          {post.postPhoto!=="" && <div><img src={post.postPhoto} alt="loading.." className="w-[250px] h-[200px] rounded-md" /></div>}
           <div className="flex w-1/2 justify-start mt-1 mb-1">
             <div className="flex justify-center items-center hover:bg-[#e15d5d] p-[5px] rounded-full mr-[20px]">
               <img
@@ -33,6 +34,7 @@ const SinglePost = ({ post }) => {
                 loading="lazy"
                 className="w-[14px] h-[14px] rounded-full hover:cursor-pointer"
               />
+              <div className="text-[11px] ml-1 flex justify-center items-center">{post.likeCount}</div>
             </div>
             <div className="flex justify-center items-center hover:bg-[#5060d8] p-[5px] rounded-full mr-[20px]">
               <img

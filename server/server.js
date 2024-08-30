@@ -30,7 +30,7 @@ app.post(
   async (req, res) => {
     const filePath = req.file.path;
     try {
-      const { url } = await uploadOnCloudinary(filePath);
+      const { url } = await uploadOnCloudinary(filePath, "TBM_USERS_PIC");
       fs.unlink(filePath, () => {});
       return res.status(201).json(url);
     } catch (err) {
@@ -45,12 +45,27 @@ app.post(
   async (req, res) => {
     const user = req.user;
     try {
-      const { url } = await uploadOnCloudinary(req.file.path);
-      fs.unlink(req.file.path,()=>{})
+      const { url } = await uploadOnCloudinary(req.file.path, "TBM_USERS_PIC");
+      fs.unlink(req.file.path, () => {});
       await User.findByIdAndUpdate({ _id: user._id }, { photo: url });
-      return res.status(201).json({msg:'photo edit success.'})
+      return res.status(201).json({ msg: "photo edit success." });
     } catch (error) {
       console.log("some error occured while editing the photo", error);
+    }
+  }
+);
+app.post(
+  "/api/v1/upload-post",
+  authMiddleWare,
+  upload.single("post-image"),
+  async (req, res) => {
+    const file = req.file.path;
+    try {
+      const { url } = await uploadOnCloudinary(file, "TBM_POSTS");
+      fs.unlink(file,(err)=>{console.log(err)})
+      return res.status(201).json(url);
+    } catch (error) {
+      console.log("some error occured in uploading post photo", error);
     }
   }
 );

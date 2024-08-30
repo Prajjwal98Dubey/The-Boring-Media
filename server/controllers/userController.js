@@ -97,12 +97,13 @@ const loginUser = async (req, res) => {
   }
 };
 const createPost = async (req, res) => {
-  const { post } = req.body;
+  const { post,postPhoto } = req.body;
   const user = req.user;
   try {
     const newPost = await Post.create({
       post,
       user: user._id,
+      postPhoto
     });
     res.status(200).json(newPost);
   } catch (error) {

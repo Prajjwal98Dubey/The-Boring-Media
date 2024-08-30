@@ -2,7 +2,11 @@ const mongoose = require("mongoose");
 const postSchema = mongoose.Schema({
   post: {
     type: String,
-    required: true,
+    default:""
+  },
+  postPhoto:{
+    type:String,
+    default:""
   },
   time: {
     type: Date,

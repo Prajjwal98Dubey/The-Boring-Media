@@ -61,7 +61,11 @@ const SinglePostSideBar = ({ post }) => {
             className="w-[45px] h-[45px] rounded-full"
           />
         </div>
-        <div className="w-[90%] flex justify-start">{post.post}</div>
+        <div>
+        <div className="w-[90%] flex justify-start">{post.post}
+        </div>
+        {post.postPhoto!=="" && <div><img src={post.postPhoto} alt="loading.." className="w-[250px] h-[200px] rounded-md" /></div>}
+        </div>
       </div>
       <div className="flex justify-center">
         <div className="w-fit p-2 m-1 rounded-lg border border-gray-400 flex justify-around">

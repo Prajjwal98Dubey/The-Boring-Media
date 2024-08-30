@@ -322,6 +322,7 @@ const MyProfile = () => {
                           <div className="text-white font-semibold text-[15px] w-full h-fit flex justify-start p-1">
                             {post.post}
                           </div>
+                          {post.postPhoto!=="" && <div><img src={post.postPhoto} alt="loading.." className="w-[250px] h-[200px] rounded-md" /></div>}
                           <div className="flex justify-center">
                             <img
                               src={LIKE_ICON}
