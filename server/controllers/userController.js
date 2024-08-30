@@ -138,7 +138,7 @@ const getAllMyPosts = async (req, res) => {
 const myDetails = async (req, res) => {
   const user = req.user;
   try {
-    const userDetails = await User.findOne({ _id: user._id });
+    const userDetails = await User.findOne({ _id: user._id }).select("-password -refreshToken");
     return res.status(201).json(userDetails);
   } catch (error) {
     console.log("some error occured during fetching the user details.");

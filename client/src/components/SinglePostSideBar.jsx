@@ -56,7 +56,7 @@ const SinglePostSideBar = ({ post }) => {
       <div className="m-3 p-2 flex">
         <div className="w-[10%] flex justify-center items-start">
           <img
-            src="https://img.freepik.com/free-psd/3d-illustration-human-avatar-profile_23-2150671142.jpg?size=338&ext=jpg&ga=GA1.1.2008272138.1722038400&semt=ais_user"
+            src={post.photo}
             alt="loading"
             className="w-[45px] h-[45px] rounded-full"
           />

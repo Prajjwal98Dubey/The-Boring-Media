@@ -87,7 +87,10 @@ const Register = () => {
       method: "POST",
       body: data
     })
-      .then((res) => res.json()).then((data)=>setPhoto(data))
+      .then((res) => res.json()).then((data)=>{
+        setPhoto(data)
+        alert('photo upload success.')
+      })
       .catch((err) => console.log(err));
   };
 

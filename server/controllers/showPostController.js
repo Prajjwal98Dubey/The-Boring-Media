@@ -2,6 +2,7 @@ const Follow = require("../models/FollowModal");
 const Post = require("../models/postsModal");
 const Like = require("../models/likeSchema");
 const Comment = require("../models/commentModal");
+const User = require("../models/userModel")
 /*
 const displayPostsForLoggedInUser = async (req, res) => {
     const user = req.user
@@ -22,6 +23,8 @@ const displayPostsForLoggedInUser = async (req, res) => {
     }
 }
     */
+
+/*
 const displayPostsForLoggedInUser = async (req, res) => {
   const user = req.user;
   const allFollowing = await Follow.find({ followingId: user._id });
@@ -40,12 +43,38 @@ const displayPostsForLoggedInUser = async (req, res) => {
     console.log("show post controller", err);
   }
 };
+*/
+
+const displayPostsForLoggedInUser = async(req,res)=>{
+  const user = req.user
+  const allFollowing = await Follow.find({ followingId: user._id });
+  let allPostsDetails = [];
+  try {
+    for(let i=0;i<allFollowing.length;i++){
+      let currFollowing = allFollowing[i].followerId;
+      const currPost = await Post.find({ user: currFollowing });
+      const currUser = await User.findOne({_id:currFollowing}).select("-password -refreshToken -_id")
+      for(let j =0;j<currPost.length;j++){
+         tmp = {...currPost[j]._doc,...currUser._doc}
+         allPostsDetails.push(tmp)
+      }
+    }
+    allPostsDetails.sort(
+      (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
+    );
+    return res.status(201).json(allPostsDetails);
+  } catch (error) {
+    console.log("some error occured in the show post controller", error);
+  }
+}
 
 const showSinglePost = async (req, res) => {
   const postId = req.query.id;
   try {
     const post = await Post.findOne({ _id: postId });
-    res.status(201).json(post);
+    const user = await User.findOne({_id:post.user}).select("-password -refreshToken -_id");
+    let postDetails = {...post._doc,...user._doc}
+    res.status(201).json(postDetails);
   } catch (error) {
     console.log(error);
   }

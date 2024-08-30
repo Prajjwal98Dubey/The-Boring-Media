@@ -26,6 +26,7 @@ import PostModal from "../components/PostModal";
 import Brand from "../components/Brand";
 import { MyPostContext } from "../contexts/MyPostContext";
 import { Link } from "react-router-dom";
+import RecommendPostsContext from "../contexts/RecommendPostsContext";
 
 const MyProfile = () => {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ const MyProfile = () => {
   const [fileData, setFileData] = useState({});
   const detailRef = useRef(true);
   const { postFromContext, setPostFromContext } = useContext(MyPostContext);
+  const {setRecommendPosts} = useContext(RecommendPostsContext);
   useEffect(() => {
     const getMyDetails = async () => {
       if (
@@ -119,6 +121,7 @@ const MyProfile = () => {
   const handleLogOut = () => {
     localStorage.removeItem("devil-auth");
     setPostFromContext([]);
+    setRecommendPosts([])
     navigate("/auth/login");
     return;
   };
@@ -166,6 +169,7 @@ const MyProfile = () => {
   };
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    if (Object.keys(fileData).length===0) return alert ('upload some file to continue.')
     const data = new FormData();
     data.append("user-image", fileData);
     await fetch(EDIT_USER_PIC, {
@@ -177,6 +181,7 @@ const MyProfile = () => {
         }`,
       },
     });
+    alert("photo edited.");
   };
 
   return (
@@ -238,24 +243,7 @@ const MyProfile = () => {
                   {following}
                 </div>
               </div>
-              <div className="m-2 flex items-center justify-center">
-                <form onSubmit={(e) => handleFormSubmit(e)}>
-                  <input
-                    type="file"
-                    name="user-image"
-                    className="text-white"
-                    onChange={(e) => handleFile(e)}
-                  />
-                  <div className="flex justify-center">
-                    <button
-                      type="submit"
-                      className="bg-blue-500 text-white hover:bg-blue-600 rounded-md w-[100px] h-[30px]"
-                    >
-                      edit
-                    </button>
-                  </div>
-                </form>
-              </div>
+
               {localStorage.getItem("devil-auth") &&
               JSON.parse(localStorage.getItem("devil-auth")).name ===
                 userName ? (
@@ -269,6 +257,22 @@ const MyProfile = () => {
                   />
                 </div>
               ) : null}
+            </div>
+            <div className="m-2 flex items-center justify-center">
+              <form onSubmit={(e) => handleFormSubmit(e)}>
+                <input
+                  type="file"
+                  name="user-image"
+                  className="text-white flex justify-center"
+                  onChange={(e) => handleFile(e)}
+                />
+                <button
+                  type="submit"
+                  className="bg-blue-500 text-white hover:bg-blue-600 rounded-md w-[100px] h-[30px]"
+                >
+                  Edit
+                </button>
+              </form>
             </div>
             {localStorage.getItem("devil-auth") &&
               JSON.parse(localStorage.getItem("devil-auth")).name !==
