@@ -16,7 +16,6 @@ const { authMiddleWare } = require("./middlewares/authMiddleware");
 const User = require("./models/userModel");
 const communityRouter = require("./routes/communityRoutes");
 
-
 app.use(express.json());
 app.use(
   cors({
@@ -73,6 +72,32 @@ app.post(
     }
   }
 );
+app.post(
+  "/api/v1/c/community-photo",
+  authMiddleWare,
+  upload.single("community-photo"),
+  async (req, res) => {
+    try {
+      const { url } = await uploadOnCloudinary(req.file.path, "TBM_COMM_PHOTO");
+      fs.unlink(req.file.path, () => {});
+      return res.status(201).json({ url });
+    } catch (error) {
+      console.log(
+        "some error occured during uploading on cloudinary community photo",
+        error
+      );
+    }
+  }
+);
+app.post('/api/v1/c/community-cover-photo',authMiddleWare,upload.single('community-cover-image'),async(req,res)=>{
+  try {
+    const {url} = await uploadOnCloudinary(req.file.path,"TBM_COMM_COVER_PHOTO")
+    fs.unlink(req.file.path,()=>{})
+    return res.status(201).json({url})
+  } catch (error) {
+    console.log('some error occured during uploading on the cloudinary community cover photo',error)
+  }
+})
 
 app.use("/api/v1/u", userRouter);
 app.use("/api/v1/f", followRouter);
@@ -80,7 +105,7 @@ app.use("/api/v1/show-post", showPostRouter);
 app.use("/api/v1/comment", commentRouter);
 app.use("/api/v1/like", likeRouter);
 app.use("/api/v1/bookmark", bookmarkRouter);
-app.use("/api/v1/c",communityRouter)
+app.use("/api/v1/c", communityRouter);
 
 const start = async () => {
   await connectDB();
@@ -90,4 +115,3 @@ const start = async () => {
   // await startRedisClient()
 };
 start();
-
