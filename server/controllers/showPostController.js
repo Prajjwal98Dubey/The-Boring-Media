@@ -2,7 +2,10 @@ const Follow = require("../models/FollowModal");
 const Post = require("../models/postsModal");
 const Like = require("../models/likeSchema");
 const Comment = require("../models/commentModal");
-const User = require("../models/userModel")
+const User = require("../models/userModel");
+const client = require("../helpers/redis-client");
+// const { client } = require("../helpers/redis-client");
+
 /*
 const displayPostsForLoggedInUser = async (req, res) => {
     const user = req.user
@@ -43,37 +46,55 @@ const displayPostsForLoggedInUser = async (req, res) => {
     console.log("show post controller", err);
   }
 };
+
+get => key => show_all_loggedin_user_posts
 */
 
-const displayPostsForLoggedInUser = async(req,res)=>{
-  const user = req.user
+const displayPostsForLoggedInUser = async (req, res) => {
+  // console.log("client =>",client)
+  const user = req.user;
+  let cachedDisplayPostsForLoggedInUser = await client.get(
+    `show_all_loggedin_user_post:${user.name}`
+  );
+  if (cachedDisplayPostsForLoggedInUser) {
+    let response = JSON.parse(cachedDisplayPostsForLoggedInUser);
+    return res.status(201).json(response);
+  }
   const allFollowing = await Follow.find({ followingId: user._id });
   let allPostsDetails = [];
   try {
-    for(let i=0;i<allFollowing.length;i++){
+    for (let i = 0; i < allFollowing.length; i++) {
       let currFollowing = allFollowing[i].followerId;
       const currPost = await Post.find({ user: currFollowing });
-      const currUser = await User.findOne({_id:currFollowing}).select("-password -refreshToken -_id")
-      for(let j =0;j<currPost.length;j++){
-         tmp = {...currPost[j]._doc,...currUser._doc}
-         allPostsDetails.push(tmp)
+      const currUser = await User.findOne({ _id: currFollowing }).select(
+        "-password -refreshToken -_id"
+      );
+      for (let j = 0; j < currPost.length; j++) {
+        tmp = { ...currPost[j]._doc, ...currUser._doc };
+        allPostsDetails.push(tmp);
       }
     }
     allPostsDetails.sort(
       (a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()
     );
+    await client.SETEX(
+      `show_all_loggedin_user_post:${user.name}`,600,
+      JSON.stringify(allPostsDetails)
+    );
     return res.status(201).json(allPostsDetails);
   } catch (error) {
     console.log("some error occured in the show post controller", error);
   }
-}
+};
 
 const showSinglePost = async (req, res) => {
   const postId = req.query.id;
   try {
     const post = await Post.findOne({ _id: postId });
-    const user = await User.findOne({_id:post.user}).select("-password -refreshToken -_id");
-    let postDetails = {...post._doc,...user._doc}
+    const user = await User.findOne({ _id: post.user }).select(
+      "-password -refreshToken -_id"
+    );
+    let postDetails = { ...post._doc, ...user._doc };
     res.status(201).json(postDetails);
   } catch (error) {
     console.log(error);

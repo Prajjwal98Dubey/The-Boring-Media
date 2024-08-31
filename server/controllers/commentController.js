@@ -1,10 +1,15 @@
 const Comment = require('../models/commentModal')
-
+const User = require('../models/userModel')
 const getAllComments = async (req, res) => {
   const postId = req.query.postId;
   try {
+    let allCommentsDetails=[];
     const allComments = await Comment.find({ originalPost: postId });
-    res.status(201).json(allComments);
+    for(let i = 0;i<allComments.length;i++){
+      let user = await User.findOne({_id:allComments[i].user}).select("-password -refreshToken -_id -bio")
+      allCommentsDetails.push({...allComments[i]._doc,...user._doc})
+    }
+    res.status(201).json(allCommentsDetails);
   } catch (error) {
     console.log(error);
   }

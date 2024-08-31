@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 const fs = require("fs");
 const path = require("path");
 const mongoose = require("mongoose");
+const client = require("../helpers/redis-client");
 
 const generateAccessAndRefreshToken = async (userId) => {
   const user = await User.findById({ _id: userId });
@@ -123,9 +124,17 @@ const deletePost = async (req, res) => {
 };
 const getAllMyPosts = async (req, res) => {
   const user = req.user;
+  let cachedAllMyPosts = await client.get(`all_my_posts:${user.name}`);
+  if (cachedAllMyPosts)
+    return res.status(201).json({ allPosts: JSON.parse(cachedAllMyPosts) });
   try {
     const allPosts = await Post.find({ user: user._id });
     const newOrderOfPosts = allPosts.reverse();
+    await client.SETEX(
+      `all_my_posts:${user.name}`,
+      600,
+      JSON.stringify(newOrderOfPosts)
+    );
     return res.status(201).json({ allPosts: newOrderOfPosts });
   } catch (error) {
     console.log(
@@ -138,9 +147,19 @@ const getAllMyPosts = async (req, res) => {
 };
 const myDetails = async (req, res) => {
   const user = req.user;
+  const cachedUserDetails = await client.get(`my_details:${user.name}`);
+  if (cachedUserDetails) {
+    let response = JSON.parse(cachedUserDetails);
+    return res.status(201).json(response);
+  }
   try {
     const userDetails = await User.findOne({ _id: user._id }).select(
       "-password -refreshToken"
+    );
+    await client.SETEX(
+      `my_details:${user.name}`,
+      600,
+      JSON.stringify(userDetails)
     );
     return res.status(201).json(userDetails);
   } catch (error) {
@@ -177,6 +196,7 @@ const editProfileBio = async (req, res) => {
   const { bio } = req.body;
   try {
     await User.findByIdAndUpdate({ _id: user._id }, { bio: bio });
+    await client.DEL(`my_details:${user.name}`)
     return res.status(201).json({ msg: "edit success." });
   } catch (error) {
     console.log("some error occured during edit profile.", error);

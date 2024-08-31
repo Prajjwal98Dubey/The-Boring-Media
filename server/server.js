@@ -15,6 +15,7 @@ const uploadOnCloudinary = require("./helpers/cloudinary");
 const { authMiddleWare } = require("./middlewares/authMiddleware");
 const User = require("./models/userModel");
 
+
 app.use(express.json());
 app.use(
   cors({
@@ -62,7 +63,9 @@ app.post(
     const file = req.file.path;
     try {
       const { url } = await uploadOnCloudinary(file, "TBM_POSTS");
-      fs.unlink(file,(err)=>{console.log(err)})
+      fs.unlink(file, (err) => {
+        console.log(err);
+      });
       return res.status(201).json(url);
     } catch (error) {
       console.log("some error occured in uploading post photo", error);
@@ -76,10 +79,14 @@ app.use("/api/v1/show-post", showPostRouter);
 app.use("/api/v1/comment", commentRouter);
 app.use("/api/v1/like", likeRouter);
 app.use("/api/v1/bookmark", bookmarkRouter);
+
+
 const start = async () => {
   await connectDB();
   app.listen(process.env.PORT, () =>
     console.log(`App Started at ${process.env.PORT}`)
   );
+  // await startRedisClient()
 };
 start();
+
