@@ -14,6 +14,7 @@ const fs = require("fs");
 const uploadOnCloudinary = require("./helpers/cloudinary");
 const { authMiddleWare } = require("./middlewares/authMiddleware");
 const User = require("./models/userModel");
+const communityRouter = require("./routes/communityRoutes");
 
 
 app.use(express.json());
@@ -79,7 +80,7 @@ app.use("/api/v1/show-post", showPostRouter);
 app.use("/api/v1/comment", commentRouter);
 app.use("/api/v1/like", likeRouter);
 app.use("/api/v1/bookmark", bookmarkRouter);
-
+app.use("/api/v1/c",communityRouter)
 
 const start = async () => {
   await connectDB();

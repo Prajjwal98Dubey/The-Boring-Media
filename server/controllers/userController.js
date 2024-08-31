@@ -106,6 +106,16 @@ const createPost = async (req, res) => {
       user: user._id,
       postPhoto,
     });
+    let cachedAllMyPosts = await client.get(`all_my_posts:${user.name}`);
+    let newSetValueOfCachedAllMyPosts = [
+      newPost,
+      ...JSON.parse(cachedAllMyPosts),
+    ];
+    await client.SETEX(
+      `all_my_posts:${user.name}`,
+      600,
+      JSON.stringify(newSetValueOfCachedAllMyPosts)
+    );
     res.status(200).json(newPost);
   } catch (error) {
     console.log("some error occured!!!");
@@ -196,7 +206,7 @@ const editProfileBio = async (req, res) => {
   const { bio } = req.body;
   try {
     await User.findByIdAndUpdate({ _id: user._id }, { bio: bio });
-    await client.DEL(`my_details:${user.name}`)
+    await client.DEL(`my_details:${user.name}`);
     return res.status(201).json({ msg: "edit success." });
   } catch (error) {
     console.log("some error occured during edit profile.", error);
