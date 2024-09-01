@@ -1,15 +1,18 @@
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
 import {
   BOOKMARK_ICON,
   DOWNLOAD_ICON,
-  STORE_ICON,
   HOME_ICON,
+  SEARCH_ICON,
+  STORE_ICON,
 } from "../assets/icons";
 import { Link } from "react-router-dom";
 import tbm from "../assets/images/TBM1.png";
 import { NavBarContext } from "../contexts/NavBarContext";
+import SearchModal from "./SearchModal";
 const Navbar = () => {
   const { selectedPath } = useContext(NavBarContext);
+  const[isSearchModalOpen,setIsSearchModalOpen] = useState(false)
   useEffect(() => {
     const handleScroll = () => {
       const nav = document.getElementById("nav");
@@ -53,6 +56,12 @@ const Navbar = () => {
               <img src={HOME_ICON} alt="loading" loading="lazy" />
             </div>
           </Link>
+          <div onClick={()=>setIsSearchModalOpen(true)}
+              className={`flex justify-center items-center p-2 rounded-lg hover:bg-[#A569BD] cursor-pointer`}
+            >
+              <img src={SEARCH_ICON} alt="loading" loading="lazy" />
+            </div>
+            {isSearchModalOpen && <SearchModal setIsSearchModalOpen={setIsSearchModalOpen}/>}
           <Link to="/store">
             <div
               className={`flex justify-center items-center p-2 rounded-lg hover:bg-[#A569BD] cursor-pointer ${
@@ -80,11 +89,6 @@ const Navbar = () => {
               <img src={DOWNLOAD_ICON} alt="loading" loading="lazy" />
             </div>
           </Link>
-          {/* {
-                        icons.map((icon, index) => (
-                            <div key={index} className="flex justify-center items-center p-3 rounded-lg hover:bg-[#A569BD] cursor-pointer"><img src={icon} alt="loading" loading="lazy" /></div>
-                        ))
-                    } */}
         </div>
       </div>
       {localStorage.getItem("devil-auth") ? (

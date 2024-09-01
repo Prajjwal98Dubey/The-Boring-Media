@@ -52,4 +52,19 @@ const createCommunityPost = async (req, res) => {
     console.log("some error occured during creating post for community", error);
   }
 };
-module.exports = { createCommunity, joinCommunity, createCommunityPost };
+const allMyCommunities = async(req,res)=>{
+  const user = req.user
+  try {
+    let response=[];
+    const allCommunities = await JoinCommunity.find({user:user._id})
+    for (let index = 0; index < allCommunities.length; index++) {
+      const community = await Community.findOne({_id:allCommunities[index].community})
+      response.push(community)
+      
+    }
+    return res.status(201).json(response)
+  } catch (error) {
+    console.log('some error occured during fetching all my communities',error)
+  }
+}
+module.exports = { createCommunity, joinCommunity, createCommunityPost ,allMyCommunities};

@@ -7,6 +7,7 @@ import Store from "./pages/Store";
 import BookMark from "./pages/BookMark";
 import Download from "./pages/Download";
 import SinglePostPage from "./pages/SinglePostPage";
+import SearchPage from "./pages/SearchPage";
 function App() {
   return (
     <>
@@ -45,6 +46,10 @@ const appRouter = createBrowserRouter([
   {
     path: "/download",
     element: <Download />,
+  },
+  {
+    path:"/search",
+    element:<SearchPage/>
   },
   {
     path: "/post/:id",
