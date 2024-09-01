@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import CommunityModal from "../components/CommunityModal";
 import axios from "axios";
 import { ALL_MY_COMMUNITIES } from "../apis/backendapi";
-import { trimCommTitle } from "../helpers/trimCommName";
+import { trimString } from "../helpers/trimCommName";
 
 const LeftSideBar = () => {
   const [communities, setCommunities] = useState([]);
@@ -66,7 +66,9 @@ const LeftSideBar = () => {
                       />
                     )}
                   </div>
-                  <div className="text-[15px] text-white flex justify-center items-center ml-1">{`c/${trimCommTitle(comm.title)}`}</div>
+                  <div className="text-[15px] text-white flex justify-center items-center ml-1">{`c/${trimString(
+                    comm.title
+                  )}`}</div>
                 </div>
               ))}
             </div>

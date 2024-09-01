@@ -2,26 +2,95 @@
 
 import { useState } from "react";
 import BackDrop from "./BackDrop";
+import axios from "axios";
+import { SEARCH_API } from "../apis/backendapi";
+import { trimString } from "../helpers/trimCommName";
 
 const SearchModal = ({ setIsSearchModalOpen }) => {
-    const[searchText,setSearchText] = useState("")
+  const [searchText, setSearchText] = useState("");
+  const [searchResult, setSearchResult] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const handleSearchQuery = async () => {
+    if (searchText === "") return alert('search something to proceed...')
+    const { data } = await axios.get(SEARCH_API + `?text=${searchText}`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+    setSearchResult(data);
+    setIsLoading(false);
+  };
   return (
     <div className="absolute">
       <div onClick={() => setIsSearchModalOpen(false)}>
         <BackDrop />
       </div>
-      <div className="flex justify-center z-10 fixed top-[20%] left-[50%] transform -translate-x-1/2 -translate-y-1/2">
+      <div className="flex justify-center z-10 font-rubik fixed top-[20%] left-[50%] transform -translate-x-1/2 -translate-y-1/2">
         <input
           type="text"
-          className=" w-[400px] h-[35px] p-2 border border-gray-400 rounded-md bg-[#313131] text-white"
+          className=" w-[400px] h-[45px] p-2 border border-gray-400 rounded-md bg-[#313131] text-white"
           placeholder="search ..."
           value={searchText}
-          onChange={(e)=>setSearchText(e.target.value)}
+          autoFocus
+          onChange={(e) => setSearchText(e.target.value)}
         />
-        <span className="absolute right-2 top-[5px]"><button className="w-[80px] h-[25px] rounded-md text-white bg-blue-500 cursor-pointer hover:bg-blue-600">search</button></span>
-      </div>
-      <div className="flex justify-center z-10 fixed top-[47%] left-[50%] transform -translate-x-1/2 -translate-y-1/2">
-        <div className=" w-[400px] h-[350px] p-2 border border-gray-400 rounded-md bg-[#313131] text-white"></div>
+        <span className="absolute right-2 top-[10px]">
+          <button
+            onClick={handleSearchQuery}
+            className="w-[80px] h-[25px] rounded-md text-white bg-blue-500 cursor-pointer hover:bg-blue-600 font-bold"
+          >
+            search
+          </button>
+        </span>
+        {!isLoading && (
+          <div className={`w-[400px] ${searchResult.length > 7 ? "h-[500px] overflow-auto overflow-x-hidden" : "h-fit"}  p-2 absolute top-12  font-rubik transform  border border-gray-400 shadow-sm shadow-gray-400 rounded-md z-10 bg-[#2a2929]`}>
+            {searchResult.map((item) => (
+              <div
+                key={item._id}
+                className="w-full h-fit p-1 hover:bg-[#464545] cursor-pointer flex rounded-md m-1"
+              >
+                {item.category === "people" ? (
+                  item.photo !== "" ? (
+                    <div>
+                      <img
+                        className="w-[40px] h-[40px] rounded-full"
+                        src={item.photo}
+                        alt="loading"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-[40px] h-[40px] rounded-full bg-gray-700 text-white font-bold ">
+                      {item.name[0]}
+                    </div>
+                  )
+                ) : null}
+                {item.category === "community" ? (
+                  item.communityPhoto !== "" ? (
+                    <div>
+                      <img
+                        className="w-[40px] h-[40px] rounded-full"
+                        src={item.communityPhoto}
+                        alt="loading"
+                      />
+                    </div>
+                  ) : (
+                    <div className="w-[40px] h-[40px] rounded-full bg-gray-700 text-white font-bold text-xl flex justify-center items-center ">
+                      /c
+                    </div>
+                  )
+                ) : null}
+                <div className="text-white font-bold ml-2 flex justify-center items-center">
+                  {item.category === "people"
+                    ? trimString(item.name)
+                    : trimString(item.title)}
+                </div>
+                <div className="text-gray-400 font-playwright ml-1 text-[11px] flex items-center">
+                  {item.category}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
