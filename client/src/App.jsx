@@ -8,6 +8,7 @@ import BookMark from "./pages/BookMark";
 import Download from "./pages/Download";
 import SinglePostPage from "./pages/SinglePostPage";
 import SearchPage from "./pages/SearchPage";
+import CommunityPage from "./pages/CommunityPage";
 function App() {
   return (
     <>
@@ -55,4 +56,8 @@ const appRouter = createBrowserRouter([
     path: "/post/:id",
     element: <SinglePostPage />,
   },
+  {
+    path:"/c/:id",
+    element:<CommunityPage/>
+  }
 ]);

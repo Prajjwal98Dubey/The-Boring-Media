@@ -52,19 +52,35 @@ const createCommunityPost = async (req, res) => {
     console.log("some error occured during creating post for community", error);
   }
 };
-const allMyCommunities = async(req,res)=>{
-  const user = req.user
+const allMyCommunities = async (req, res) => {
+  const user = req.user;
   try {
-    let response=[];
-    const allCommunities = await JoinCommunity.find({user:user._id})
+    let response = [];
+    const allCommunities = await JoinCommunity.find({ user: user._id });
     for (let index = 0; index < allCommunities.length; index++) {
-      const community = await Community.findOne({_id:allCommunities[index].community})
-      response.push(community)
-      
+      const community = await Community.findOne({
+        _id: allCommunities[index].community,
+      });
+      response.push(community);
     }
-    return res.status(201).json(response)
+    return res.status(201).json(response);
   } catch (error) {
-    console.log('some error occured during fetching all my communities',error)
+    console.log("some error occured during fetching all my communities", error);
   }
-}
-module.exports = { createCommunity, joinCommunity, createCommunityPost ,allMyCommunities};
+};
+const getSingleCommunity = async (req, res) => {
+  const id = req.query.id;
+  try {
+    const community = await Community.findOne({ _id: id });
+    return res.status(201).json(community);
+  } catch (error) {
+    console.log("some error occured while getting community", error);
+  }
+};
+module.exports = {
+  createCommunity,
+  joinCommunity,
+  createCommunityPost,
+  allMyCommunities,
+  getSingleCommunity,
+};

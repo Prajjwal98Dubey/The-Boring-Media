@@ -212,7 +212,17 @@ const editProfileBio = async (req, res) => {
     console.log("some error occured during edit profile.", error);
   }
 };
-
+const hostDetails = async (req, res) => {
+  const host = req.query.host;
+  try {
+    const user = await User.findOne({ _id: host }).select(
+      "-password -refreshToken -bio"
+    );
+    return res.status(201).json(user);
+  } catch (error) {
+    console.log("some error occured during fetching host details", error);
+  }
+};
 module.exports = {
   registerUser,
   loginUser,
@@ -222,4 +232,5 @@ module.exports = {
   myDetails,
   getUserDetail,
   editProfileBio,
+  hostDetails,
 };
