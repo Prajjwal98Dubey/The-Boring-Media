@@ -29,6 +29,8 @@ import { MyPostContext } from "../contexts/MyPostContext";
 import { Link } from "react-router-dom";
 import RecommendPostsContext from "../contexts/RecommendPostsContext";
 import EditModal from "../components/EditModal";
+import ChatSm from "../components/ChatSm";
+import Chat from "../components/Chat";
 
 const MyProfile = () => {
   const navigate = useNavigate();
@@ -44,6 +46,7 @@ const MyProfile = () => {
   const [isFollowing, setIsFollowing] = useState(false);
   const [following, setFollowing] = useState(0);
   const [fileData, setFileData] = useState({});
+  const[isOpenChat,setIsOpenChat] = useState(false)
   const detailRef = useRef(true);
   const { postFromContext, setPostFromContext } = useContext(MyPostContext);
   const { setRecommendPosts } = useContext(RecommendPostsContext);
@@ -191,6 +194,17 @@ const MyProfile = () => {
   return (
     <div className="h-[100vh] w-[100vw]">
       <Brand />
+      {JSON.parse(localStorage.getItem('devil-auth')).name !== userName && 
+      <div className="fixed bottom-5 right-7" onClick={()=>setIsOpenChat(true)}>
+        <ChatSm />
+      </div>
+      }
+      {
+        isOpenChat && 
+        <div className="fixed w-[400px] h-full right-0 top-0 bg-[#3e3d3d] z-10 rounded-l-md">
+            <Chat setIsOpenChat={setIsOpenChat} userName={userName}/>
+        </div>
+      }
       {!isLoading && (
         <>
           <div className="w-[100%] h-[20%] bg-blue-600 flex justify-center relative">
