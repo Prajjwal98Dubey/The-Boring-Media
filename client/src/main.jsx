@@ -10,9 +10,7 @@ createRoot(document.getElementById("root")).render(
   <NavBarContextProvider>
     <MyPostContextProvider>
       <RecommendPostsContextProvider>
-        {/* <StrictMode> */}
           <App />
-        {/* </StrictMode> */}
       </RecommendPostsContextProvider>
     </MyPostContextProvider>
   </NavBarContextProvider>

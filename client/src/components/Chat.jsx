@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { CLOSE_SYMBOL_ICON, SEND_ICON } from "../assets/icons";
 import { capitalizeFirstLetter } from "../helpers/capitalizeFirstLetter";
+import { chatRoomId } from "../helpers/chatRoomIdGenerator";
 
 const Chat = ({ setIsOpenChat, userName }) => {
   const [chats, setChats] = useState([]);
@@ -13,15 +14,17 @@ const Chat = ({ setIsOpenChat, userName }) => {
     let ws = new WebSocket("ws://localhost:8081");
     wsRef.current = ws;
     ws.addEventListener("open", () => {
-      console.log("in open add event listener");
       ws.send(
         JSON.stringify({
           client: `${JSON.parse(localStorage.getItem("devil-auth")).name}`,
+          roomId: chatRoomId(
+            userName,
+            JSON.parse(localStorage.getItem("devil-auth")).name
+          ),
         })
       );
     });
     ws.addEventListener("message", (payload) => {
-      console.log("-----", payload.data, typeof payload.data);
       const newChat = JSON.parse(payload.data);
       setChats((prevChats) => [...prevChats, newChat]);
     });
@@ -31,13 +34,18 @@ const Chat = ({ setIsOpenChat, userName }) => {
     if (message === "") return alert("write some message to be sent.");
     setChats([
       ...chats,
-      { message, sender: JSON.parse(localStorage.getItem("devil-auth")).name },
+      {
+        message,
+        sender: JSON.parse(localStorage.getItem("devil-auth")).name,
+        reciever: userName,
+      },
     ]);
     wsRef.current.send(
       JSON.stringify({
         message: message,
         sender: JSON.parse(localStorage.getItem("devil-auth")).name,
         reciever: userName,
+        roomId:chatRoomId(userName,JSON.parse(localStorage.getItem("devil-auth")).name)
       })
     );
     setMessage("");
@@ -58,24 +66,30 @@ const Chat = ({ setIsOpenChat, userName }) => {
             className="w-[17px] h-[17px] rounded-full"
           />
         </div>
-        {chats.length === 0 ? null : (
-          <div>
-            {chats.map((chat, index) => (
-              <div key={index} className="text-white">
-                {chat.sender ===
-                JSON.parse(localStorage.getItem("devil-auth")).name ? (
-                  <div className="flex justify-end mb-2">
-                    <div className="bg-green-600 p-1 rounded-md w-fit h-fit mr-2">{chat.message}</div>
-                  </div>
-                ) : (
-                  <div className="flex justify-start mb-2 ">
-                    <div className="bg-gray-500 p-1 w-fit h-fit rounded-md ml-1">{chat.message}</div>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        )}
+        <div className="h-[600px] overflow-y-auto">
+          {chats.length === 0 ? null : (
+            <div>
+              {chats.map((chat, index) => (
+                <div key={index} className="text-white">
+                  {chat.sender ===
+                  JSON.parse(localStorage.getItem("devil-auth")).name ? (
+                    <div className="flex justify-end mb-2">
+                      <div className="bg-green-600 p-1 rounded-md w-fit h-fit mr-2">
+                        {chat.message}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex justify-start mb-2 ">
+                      <div className="bg-gray-500 p-1 w-fit h-fit rounded-md ml-1">
+                        {chat.message}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
         <div className="absolute bottom-0 flex justify-center p-1">
           <div>
             <textarea
