@@ -1,15 +1,18 @@
 /* eslint-disable react/prop-types */
 
-import { useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 import { CLOSE_SYMBOL_ICON, SEND_ICON } from "../assets/icons";
 import { capitalizeFirstLetter } from "../helpers/capitalizeFirstLetter";
 import { chatRoomId } from "../helpers/chatRoomIdGenerator";
-
+import axios from "axios";
+import { ALL_CHATS, CREATE_CHAT } from "../apis/backendapi";
+import ChatContext from "../contexts/ChatContext";
 const Chat = ({ setIsOpenChat, userName }) => {
   const [chats, setChats] = useState([]);
   const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const wsRef = useRef(null);
-  // let ws;
+  const { chatContexts, setChatContexts } = useContext(ChatContext);
   useEffect(() => {
     let ws = new WebSocket("ws://localhost:8081");
     wsRef.current = ws;
@@ -26,11 +29,39 @@ const Chat = ({ setIsOpenChat, userName }) => {
     });
     ws.addEventListener("message", (payload) => {
       const newChat = JSON.parse(payload.data);
+      setChatContexts((prevChats) => [...prevChats, newChat]);
       setChats((prevChats) => [...prevChats, newChat]);
     });
   }, []);
+  useEffect(() => {
+    const allChats = async () => {
+      const { data } = await axios.get(
+        ALL_CHATS +
+          `?roomId=${chatRoomId(
+            userName,
+            JSON.parse(localStorage.getItem("devil-auth")).name
+          )}`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${
+              JSON.parse(localStorage.getItem("devil-auth")).refreshToken
+            }`,
+          },
+        }
+      );
+      setChats(data);
+      setChatContexts(data);
+      setIsLoading(false);
+    };
+    if (chatContexts.length === 0 || (chatContexts.length >=1  && chatContexts[0].roomId !== chatRoomId(
+      userName,
+      JSON.parse(localStorage.getItem("devil-auth")).name
+    ) )) allChats();
+    else setIsLoading(false);
+  }, [userName]);
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (message === "") return alert("write some message to be sent.");
     setChats([
       ...chats,
@@ -40,12 +71,43 @@ const Chat = ({ setIsOpenChat, userName }) => {
         reciever: userName,
       },
     ]);
+    setChatContexts([
+      ...chatContexts,
+      {
+        message,
+        sender: JSON.parse(localStorage.getItem("devil-auth")).name,
+        reciever: userName,
+      },
+    ]);
+    await axios.post(
+      CREATE_CHAT,
+      {
+        message,
+        reciever: userName,
+        roomId: chatRoomId(
+          userName,
+          JSON.parse(localStorage.getItem("devil-auth")).name
+        ),
+      },
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${
+            JSON.parse(localStorage.getItem("devil-auth")).refreshToken
+          }`,
+        },
+      }
+    );
+    // sending it to web socket server.
     wsRef.current.send(
       JSON.stringify({
         message: message,
         sender: JSON.parse(localStorage.getItem("devil-auth")).name,
         reciever: userName,
-        roomId:chatRoomId(userName,JSON.parse(localStorage.getItem("devil-auth")).name)
+        roomId: chatRoomId(
+          userName,
+          JSON.parse(localStorage.getItem("devil-auth")).name
+        ),
       })
     );
     setMessage("");
@@ -57,7 +119,10 @@ const Chat = ({ setIsOpenChat, userName }) => {
           {capitalizeFirstLetter(userName)}
         </div>
         <div
-          onClick={() => setIsOpenChat(false)}
+          onClick={() => {
+            setIsOpenChat(false);
+            // setChatContexts([])
+          }}
           className="absolute top-[7px] right-2 rounded-full hover:bg-gray-800 cursor-pointer p-1 flex justify-center items-end"
         >
           <img
@@ -67,9 +132,13 @@ const Chat = ({ setIsOpenChat, userName }) => {
           />
         </div>
         <div className="h-[600px] overflow-y-auto">
-          {chats.length === 0 ? null : (
+          {isLoading ? (
+            <div className="flex justify-center text-white font-bold text-xl">
+              Loading...
+            </div>
+          ) : chatContexts.length === 0 ? null : (
             <div>
-              {chats.map((chat, index) => (
+              {chatContexts.map((chat, index) => (
                 <div key={index} className="text-white">
                   {chat.sender ===
                   JSON.parse(localStorage.getItem("devil-auth")).name ? (

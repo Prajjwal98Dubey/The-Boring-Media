@@ -16,6 +16,7 @@ const { authMiddleWare } = require("./middlewares/authMiddleware");
 const User = require("./models/userModel");
 const communityRouter = require("./routes/communityRoutes");
 const searchRouter = require("./routes/searchRoutes");
+const chatRouter = require("./routes/chatRoutes");
 
 app.use(express.json());
 app.use(
@@ -108,6 +109,7 @@ app.use("/api/v1/like", likeRouter);
 app.use("/api/v1/bookmark", bookmarkRouter);
 app.use("/api/v1/c", communityRouter);
 app.use('/api/v1/s',searchRouter)
+app.use('/api/v1/c',chatRouter)
 const start = async () => {
   await connectDB();
   app.listen(process.env.PORT, () =>
