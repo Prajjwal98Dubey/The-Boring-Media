@@ -5,14 +5,15 @@ const createCommunity = async (req, res) => {
   const { title, description, communityPhoto, communityCoverPhoto } = req.body;
   const user = req.user;
   try {
-    await Community.create({
+    const newCommunity = await Community.create({
       title,
       description,
       communityPhoto,
       communityCoverPhoto,
       host: user._id,
-    });
-    return res.status(201).json({ msg: "community created success." });
+    })
+    // return res.status(201).json({ msg: "community created success." });
+    return res.status(201).json(newCommunity._id);
   } catch (error) {
     console.log("some error occured during creating community", error);
   }

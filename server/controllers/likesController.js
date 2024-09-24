@@ -2,6 +2,12 @@ const Like = require("../models/likeSchema");
 const Comment = require("../models/commentModal");
 const Post = require("../models/postsModal");
 
+/*
+
+post and comments are treated similar.
+
+*/
+
 const handleLikesCount = async (req, res) => {
   const postId = req.query.postId;
   const user = req.user;

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { HOST_DETAILS, SINGLE_COMMUNITY } from "../apis/backendapi";
 import { POST_LOADER, USERS_GROUP_ICON } from "../assets/icons";
+import { capitalizeFirstLetter } from "../helpers/capitalizeFirstLetter";
 const CommunityPage = () => {
   const { id } = useParams();
   const [communityDetails, setCommunitiesDetails] = useState([]);
@@ -87,11 +88,11 @@ const CommunityPage = () => {
                   <img
                     src={hostDetail.photo}
                     alt="loading"
-                    className="w-[20px] h-[20px] rounded-full "
+                    className="w-[30px] h-[30px] rounded-full border border-gray-500 "
                   />
                 </div>
                 <div className="text-[19px] text-white font-bold flex justify-center items-center m-1">
-                  {hostDetail.name}
+                  {capitalizeFirstLetter(hostDetail.name)}
                 </div>
               </div>
             </div>

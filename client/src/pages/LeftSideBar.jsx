@@ -3,6 +3,7 @@ import CommunityModal from "../components/CommunityModal";
 import axios from "axios";
 import { ALL_MY_COMMUNITIES } from "../apis/backendapi";
 import { trimString } from "../helpers/trimCommName";
+import { Link } from "react-router-dom";
 
 const LeftSideBar = () => {
   const [communities, setCommunities] = useState([]);
@@ -47,10 +48,12 @@ const LeftSideBar = () => {
               Loading...
             </div>
           ) : (
+
             <div>
               {communities.map((comm) => (
+                <Link key={comm._id} to={`/c/${comm._id}`}>
                 <div
-                  key={comm._id}
+                 
                   className="flex m-1 p-1 hover:bg-[#777171] cursor-pointer rounded-md"
                 >
                   <div className="flex justify-center items-center">
@@ -70,8 +73,11 @@ const LeftSideBar = () => {
                     comm.title
                   )}`}</div>
                 </div>
+
+                </Link>
               ))}
             </div>
+
           )}
         </div>
       </div>

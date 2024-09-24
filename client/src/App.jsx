@@ -9,6 +9,7 @@ import Download from "./pages/Download";
 import SinglePostPage from "./pages/SinglePostPage";
 import SearchPage from "./pages/SearchPage";
 import CommunityPage from "./pages/CommunityPage";
+import Room from "./pages/Room";
 function App() {
   return (
     <>
@@ -59,5 +60,9 @@ const appRouter = createBrowserRouter([
   {
     path:"/c/:id",
     element:<CommunityPage/>
+  },
+  {
+    path:'/room',
+    element:<Room/>
   }
 ]);

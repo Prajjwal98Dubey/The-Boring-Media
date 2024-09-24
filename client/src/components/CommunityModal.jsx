@@ -6,6 +6,7 @@ import {
   COMMUNITY_COVER_PHOTO_UPLOAD,
   COMMUNITY_PHOTO_UPLOAD,
   CREATE_COMMUNITY,
+  JOIN_COMMUNITY,
 } from "../apis/backendapi";
 import axios from "axios";
 
@@ -65,7 +66,7 @@ const CommunityModal = ({ isCommunityModalOpen, setIsCommunityModalOpen }) => {
   };
   const handleCreateCommunity = async () => {
     if (title === "" || desc === "") return alert("enter mandatory fields.");
-    await axios.post(
+    const {data} = await axios.post(
       CREATE_COMMUNITY,
       {
         title,
@@ -82,6 +83,14 @@ const CommunityModal = ({ isCommunityModalOpen, setIsCommunityModalOpen }) => {
         },
       }
     );
+    await axios.post(JOIN_COMMUNITY, {
+      community:data,
+    },{
+      headers:{
+        'Content-Type':'application/json',
+        Authorization:`Bearer ${JSON.parse(localStorage.getItem('devil-auth')).refreshToken}`
+      }
+    });
     setIsCommunityModalOpen(false);
     alert("community created");
     return;
