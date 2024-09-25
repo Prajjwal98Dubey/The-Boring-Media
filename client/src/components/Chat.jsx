@@ -13,6 +13,7 @@ const Chat = ({ setIsOpenChat, userName }) => {
   const [isLoading, setIsLoading] = useState(true);
   const wsRef = useRef(null);
   const { chatContexts, setChatContexts } = useContext(ChatContext);
+  const scrollRef = useRef(null);
   useEffect(() => {
     let ws = new WebSocket("ws://localhost:8081");
     wsRef.current = ws;
@@ -54,13 +55,22 @@ const Chat = ({ setIsOpenChat, userName }) => {
       setChatContexts(data);
       setIsLoading(false);
     };
-    if (chatContexts.length === 0 || (chatContexts.length >=1  && chatContexts[0].roomId !== chatRoomId(
-      userName,
-      JSON.parse(localStorage.getItem("devil-auth")).name
-    ) )) allChats();
+    if (
+      chatContexts.length === 0 ||
+      (chatContexts.length >= 1 &&
+        chatContexts[0].roomId !==
+          chatRoomId(
+            userName,
+            JSON.parse(localStorage.getItem("devil-auth")).name
+          ))
+    )
+      allChats();
     else setIsLoading(false);
   }, [userName]);
-
+  useEffect(() => {
+    if (scrollRef.current)
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+  }, [chatContexts]);
   const handleSendMessage = async () => {
     if (message === "") return alert("write some message to be sent.");
     setChats([
@@ -131,7 +141,7 @@ const Chat = ({ setIsOpenChat, userName }) => {
             className="w-[17px] h-[17px] rounded-full"
           />
         </div>
-        <div className="h-[600px] overflow-y-auto">
+        <div ref={scrollRef} className="h-[600px] overflow-y-auto">
           {isLoading ? (
             <div className="flex justify-center text-white font-bold text-xl">
               Loading...
