@@ -1,5 +1,4 @@
 /* eslint-disable react/prop-types */
-
 import { useContext, useEffect, useRef, useState } from "react";
 import { CLOSE_SYMBOL_ICON, SEND_ICON } from "../assets/icons";
 import { capitalizeFirstLetter } from "../helpers/capitalizeFirstLetter";
