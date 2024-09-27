@@ -10,9 +10,11 @@ import { Link } from "react-router-dom";
 import tbm from "../assets/images/TBM1.png";
 import { NavBarContext } from "../contexts/NavBarContext";
 import SearchModal from "./SearchModal";
+import CreateRoom from "./CreateRoom";
 const Navbar = () => {
   const { selectedPath } = useContext(NavBarContext);
   const[isSearchModalOpen,setIsSearchModalOpen] = useState(false)
+  const[isCreateRoomOpen,setIsCreateRoomOpen] =  useState(false)
   useEffect(() => {
     const handleScroll = () => {
       const nav = document.getElementById("nav");
@@ -96,8 +98,11 @@ const Navbar = () => {
           <Link
             to={"/u/" + JSON.parse(localStorage.getItem("devil-auth")).name}
           >
-            <img className="w-[45px] h-[45px] rounded-full border border-purple-600 hover:bg-purple-700 " src={JSON.parse(localStorage.getItem('devil-auth')).photo} alt="loading" />
+            <img className="w-[45px] h-[45px] rounded-full border border-purple-600 hover:bg-purple-700 hover:shadow-sm hover:shadow-gray-300" src={JSON.parse(localStorage.getItem('devil-auth')).photo} alt="loading" />
           </Link>
+          <div className="ml-[5px]">
+            <button className="font-rubik w-[150px] h-[30px] bg-purple-600 text-white font-bold text-[15px] flex justify-center items-center p-1 rounded-md shadow-sm shadow-gray-300 hover:bg-purple-700" onClick={()=>setIsCreateRoomOpen(true)}> + Create Room</button>
+          </div>
         </div>
       ) : (
         <div className="flex justify-center items-center">
@@ -108,6 +113,7 @@ const Navbar = () => {
           </Link>
         </div>
       )}
+      {isCreateRoomOpen && <CreateRoom setIsCreateRoomOpen={setIsCreateRoomOpen} />}
     </div>
   );
 };

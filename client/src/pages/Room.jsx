@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useContext, useEffect, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { GET_ROOM_DETAILS } from "../apis/backendapi";
 import RoomContext from "../contexts/RoomContext";
 import RoomLeftSidebar from "../components/RoomLeftSidebar";
@@ -13,6 +13,14 @@ const Room = () => {
   const { roomWs } = useContext(RoomContext);
   const [roomChats, setRoomChats] = useState([]);
   const scrollRef = useRef(null);
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (!roomWs) return navigate("/store");
+    roomWs.addEventListener("message", (payload) => {
+      const { message, user } = JSON.parse(payload.data);
+      setRoomChats([...roomChats, { message, user }]);
+    });
+  });
   useEffect(() => {
     const getRoomDetails = async () => {
       const { data } = await axios.get(
@@ -28,17 +36,11 @@ const Room = () => {
     };
     getRoomDetails();
   }, [searcParams]);
+
   useEffect(() => {
-    roomWs.addEventListener("message", (payload) => {
-      // console.log(payload.data)
-      const { message, user } = JSON.parse(payload.data);
-      setRoomChats([...roomChats, { message, user }]);
-    });
-  });
-  useEffect(()=>{
     if (scrollRef.current)
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  })
+  });
   const handleSendMessage = () => {
     roomWs.send(
       JSON.stringify({
@@ -56,10 +58,12 @@ const Room = () => {
   return (
     <div className="flex">
       <div className="w-1/2 h-screen border border-transparent border-r-slate-400 text-white">
-      <div className="flex justify-center p-1 text-4xl font-bold font-playwright h-[150px] items-end">
-                {room.topic}
-              </div>
-              <RoomLeftSidebar roomId = {searcParams.get("id")}/>
+        <div className="flex justify-center p-1 text-4xl font-bold font-playwright h-[150px] items-end">
+          {room.topic}
+        </div>
+        <RoomLeftSidebar
+          roomId={searcParams.get("id")}
+        />
       </div>
       <div className="w-1/2 h-screen">
         <div className="flex justify-center text-white font-rubik">

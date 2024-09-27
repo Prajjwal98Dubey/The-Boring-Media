@@ -12,6 +12,13 @@ wss.on("connection", (socket) => {
       Object.defineProperty(socket, "room", { value: roomId });
     } else {
       const { message, roomId, user } = JSON.parse(payload);
+      let activeMembers = 0;
+      wss.clients.forEach(function each(client) {
+        if (client.readyState === WebSocket.OPEN && client.room === roomId) {
+          activeMembers += 1;
+        }
+      });
+      socket.send(JSON.stringify({ active: activeMembers }));
       wss.clients.forEach(function each(client) {
         if (
           client !== socket &&
@@ -22,6 +29,9 @@ wss.on("connection", (socket) => {
         }
       });
     }
+  });
+  socket.on("close", () => {
+    console.log("connection close by", socket.userName);
   });
 });
 
