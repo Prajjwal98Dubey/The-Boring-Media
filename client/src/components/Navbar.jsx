@@ -11,10 +11,12 @@ import tbm from "../assets/images/TBM1.png";
 import { NavBarContext } from "../contexts/NavBarContext";
 import SearchModal from "./SearchModal";
 import CreateRoom from "./CreateRoom";
+import SearchModalContext from "../contexts/searchModalContext";
 const Navbar = () => {
   const { selectedPath } = useContext(NavBarContext);
   const[isSearchModalOpen,setIsSearchModalOpen] = useState(false)
   const[isCreateRoomOpen,setIsCreateRoomOpen] =  useState(false)
+  const {setIsSearchOpen} = useContext(SearchModalContext)
   useEffect(() => {
     const handleScroll = () => {
       const nav = document.getElementById("nav");
@@ -58,7 +60,9 @@ const Navbar = () => {
               <img src={HOME_ICON} alt="loading" loading="lazy" />
             </div>
           </Link>
-          <div onClick={()=>setIsSearchModalOpen(true)}
+          <div onClick={()=>{
+            setIsSearchOpen(true)
+            setIsSearchModalOpen(true)}}
               className={`flex justify-center items-center p-2 rounded-lg hover:bg-[#A569BD] cursor-pointer`}
             >
               <img src={SEARCH_ICON} alt="loading" loading="lazy" />

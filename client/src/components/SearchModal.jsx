@@ -1,16 +1,18 @@
 /* eslint-disable react/prop-types */
 
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import BackDrop from "./BackDrop";
 import axios from "axios";
 import { SEARCH_API } from "../apis/backendapi";
 import { trimString } from "../helpers/trimCommName";
 import { Link } from "react-router-dom";
+import SearchModalContext from "../contexts/searchModalContext";
 
 const SearchModal = ({ setIsSearchModalOpen }) => {
   const [searchText, setSearchText] = useState("");
   const [searchResult, setSearchResult] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const {setIsSearchOpen} = useContext(SearchModalContext)
 
   const handleSearchQuery = async () => {
     // if (searchText === "") return alert("search something to proceed...");
@@ -46,7 +48,9 @@ const SearchModal = ({ setIsSearchModalOpen }) => {
 
   return (
     <div className="absolute">
-      <div onClick={() => setIsSearchModalOpen(false)}>
+      <div onClick={() =>{ 
+        setIsSearchOpen(false)
+        setIsSearchModalOpen(false)}}>
         <BackDrop />
       </div>
       <div className="flex justify-center z-10 font-rubik fixed top-[20%] left-[50%] transform -translate-x-1/2 -translate-y-1/2">
@@ -60,7 +64,7 @@ const SearchModal = ({ setIsSearchModalOpen }) => {
         />
         <span className="absolute right-2 top-[10px]">
           <button
-            onClick={handleSearchQuery}
+            onClick={searchText!=="" && handleSearchQuery}
             className="w-[80px] h-[25px] rounded-md text-white bg-blue-500 cursor-pointer hover:bg-blue-600 font-bold"
           >
             search
@@ -74,7 +78,6 @@ const SearchModal = ({ setIsSearchModalOpen }) => {
                 : "h-fit"
             }  p-2 absolute top-12  font-rubik transform  border border-gray-400 shadow-sm shadow-gray-400 rounded-md z-10 bg-[#2a2929]`}
           >
-            {console.log(searchResult)}
             {searchResult.length >= 1 &&
               searchResult.map((item) => (
                 <Link

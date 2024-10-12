@@ -7,9 +7,11 @@ import NavBarContextProvider from "./contexts/NavBarContextProvider.jsx";
 import RecommendPostsContextProvider from "./contexts/RecommendPostsContextProvider.jsx";
 import ChatContextProvider from "./contexts/ChatContextProvider.jsx";
 import RoomContextProvider from "./contexts/RoomContextProvider.jsx";
+import SearchContextModalProvider from "./contexts/SearchModalContextProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
   <NavBarContextProvider>
+    <SearchContextModalProvider>
     <MyPostContextProvider>
       <RecommendPostsContextProvider>
         <ChatContextProvider>
@@ -19,5 +21,6 @@ createRoot(document.getElementById("root")).render(
         </ChatContextProvider>
       </RecommendPostsContextProvider>
     </MyPostContextProvider>
+    </SearchContextModalProvider>
   </NavBarContextProvider>
 );
