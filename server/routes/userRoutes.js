@@ -9,6 +9,7 @@ const {
   getUserDetail,
   editProfileBio,
   hostDetails,
+  userSuggestions,
 } = require("../controllers/userController");
 const { authMiddleWare } = require("../middlewares/authMiddleware");
 const userRouter = express.Router();
@@ -23,6 +24,7 @@ userRouter.route("/my-details").get(authMiddleWare, myDetails);
 userRouter.route("/user-detail").get(getUserDetail);
 userRouter.route("/edit-bio").put(authMiddleWare, editProfileBio);
 userRouter.route('/host-details').get(hostDetails)
+userRouter.route('/user-suggest').get(userSuggestions)
 
 // userRouter.route('/decode-token').get(decodeToken)
 

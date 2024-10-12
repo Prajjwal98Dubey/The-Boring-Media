@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useContext, useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { GET_ROOM_DETAILS } from "../apis/backendapi";
+import { GET_ROOM_DETAILS, HOST_DETAILS } from "../apis/backendapi";
 import RoomContext from "../contexts/RoomContext";
 import RoomLeftSidebar from "../components/RoomLeftSidebar";
 
@@ -12,6 +12,7 @@ const Room = () => {
   const [message, setMessage] = useState("");
   const { roomWs } = useContext(RoomContext);
   const [roomChats, setRoomChats] = useState([]);
+  const [hostDetails, setHostDetails] = useState({});
   const scrollRef = useRef(null);
   const navigate = useNavigate();
   useEffect(() => {
@@ -23,16 +24,29 @@ const Room = () => {
   });
   useEffect(() => {
     const getRoomDetails = async () => {
-      const { data } = await axios.get(
-        GET_ROOM_DETAILS + `?roomId=${searcParams.get("id")}`,
-        {
+      await axios
+        .get(GET_ROOM_DETAILS + `?roomId=${searcParams.get("id")}`, {
           headers: {
             "Content-Type": "application/json",
           },
-        }
-      );
-      setIsLoading(false);
-      setRoom(data);
+        })
+        .then(({ data }) => {
+          setRoom(data);
+          setIsLoading(false);
+          return data.host;
+        })
+        .then(
+          async (host) =>
+            await axios
+              .get(HOST_DETAILS + `?host=${host}`, {
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              })
+              .then((res) => {
+                setHostDetails(res.data);
+              })
+        );
     };
     getRoomDetails();
   }, [searcParams]);
@@ -42,6 +56,7 @@ const Room = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
   });
   const handleSendMessage = () => {
+    if (!message) return alert("write something..");
     roomWs.send(
       JSON.stringify({
         message,
@@ -62,6 +77,8 @@ const Room = () => {
           {room.topic}
         </div>
         <RoomLeftSidebar
+          // active={active}
+          hostDetails={hostDetails}
           roomId={searcParams.get("id")}
         />
       </div>
@@ -76,11 +93,11 @@ const Room = () => {
                 className="h-[660px] w-[700px] overflow-y-auto scroll-smooth "
               >
                 {roomChats.map((chat, index) => (
-                  <div key={index} className="flex justify-start h-fit p-1">
+                  <div key={index} className="flex justify-start h-fit">
                     <div className="text-gray-300 font-medium flex justify-center items-center p-1 m-1 text-[12px]">
                       {chat.user}
                     </div>
-                    <div className="text-white font-bold flex justify-center items-center p-1 m-1 text-[15px]">
+                    <div className="text-white font-bold flex justify-center items-center p-1 m-1 text-[14px]">
                       {chat.message}
                     </div>
                   </div>

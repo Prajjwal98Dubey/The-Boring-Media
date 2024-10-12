@@ -223,6 +223,25 @@ const hostDetails = async (req, res) => {
     console.log("some error occured during fetching host details", error);
   }
 };
+
+const userSuggestions = async(req,res)=>{
+  try {
+    let distintUser = new Set()
+    let suggestions = [];
+    let allUsers = await User.find().select("-password -refreshToken -bio")
+    while (distintUser.size < 3){
+      let index = Math.floor(Math.random()*allUsers.length)
+      if (!distintUser.has(index)){
+        distintUser.add(index)
+        suggestions.push(allUsers[index])
+      }
+    }
+    return res.status(201).json(suggestions)
+  } catch (error) {
+    console.log('error while fetching the random user suggestions',error)
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
@@ -233,4 +252,5 @@ module.exports = {
   getUserDetail,
   editProfileBio,
   hostDetails,
+  userSuggestions
 };
